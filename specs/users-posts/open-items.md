@@ -103,3 +103,14 @@ Decided on 2026-11-20 while building PR 6; Ernesto can reverse any of these in a
   draft; the list is untouched.
 - **One request per submit**: the button and the fields are disabled while submitting and the handler
   returns early if a submission is in flight.
+
+## Theme (2026-11-20, PR 7)
+
+Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
+
+- **Two explicit themes, no "system" option in the switch**: with nothing stored the app follows
+  `prefers-color-scheme`; once the visitor picks one it sticks in `localStorage` under `theme`.
+- **The attribute is set before paint** by a tiny inline script in `index.html`, the only script outside
+  `src/`; the provider then owns it.
+- **Dark palette** is the Ledger dark set from the chosen design artifact; every colour lives in
+  `tokens.css`, components never branch on the theme.

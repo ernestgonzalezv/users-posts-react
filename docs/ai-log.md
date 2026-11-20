@@ -107,3 +107,12 @@ The README summarises this file.
   the faulty field was still `disabled` when it was focused and the focus test failed; validation
   now runs synchronously before the submitting state. `FormEvent` is deprecated in the React 19
   types; the handler takes the minimal `{ preventDefault }` shape instead.
+
+## PR 7 — theme switch
+
+- **Asked:** a light/dark switch next to the language one, the dark palette from the chosen design,
+  no flash of the wrong theme on load.
+- **Accepted:** the drafts from the closed `feat/language-and-theme-switch` branch (provider, context,
+  switch), the dark token block, the pre-paint script in `index.html`.
+- **Corrected:** the stacked-layout scroll test mocked `matchMedia` with `mockReturnValueOnce`, which
+  the new provider consumed first; it now answers per query. The `AppBar` tests needed the provider.
