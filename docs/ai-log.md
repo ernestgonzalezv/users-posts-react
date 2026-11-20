@@ -63,3 +63,13 @@ The README summarises this file.
 - **Corrected:** the first cut shipped these inside the users list PR, which the gate closed at 894
   lines; the components came out alone, and their tests, which were only exercised through the list,
   became their own files.
+
+## PR 3c — users list screen
+
+- **Asked:** the screen half of the first vertical slice on top of the data slice and the design
+  system: the list with every state, selection, the chosen user header, every state seen in the browser.
+- **Accepted:** the screen, the container provider, the fake-fetch test helper, the screenshot run
+  with fetch overrides injected before load.
+- **Corrected:** in the browser the chosen row's chevron was pushed out because the text column had
+  no `min-width: 0`; choosing a user left the main area blank, so the user header fills it until the
+  posts land. The screenshot script split CSS selectors on `:`; it now uses `;` between fields.
