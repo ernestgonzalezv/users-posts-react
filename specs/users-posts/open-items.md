@@ -47,3 +47,13 @@ Decided by Ernesto's gate on 2026-11-20: the first cut of the users list weighed
   client.
 - **`useResource` derives `loading`** from whether the last settled result belongs to the current
   loader and attempt, instead of writing state inside the effect.
+## Design system (2026-11-20, PR 3b)
+
+Decided by Ernesto on 2026-11-20, choosing among three design options.
+
+- **Ledger.** Warm paper, serif names and titles (Fraunces), Instrument Sans body, oxblood accent, four
+  avatar hues. Edges come from spacing and tint, not boxes. The dark palette lands with the theme
+  switch PR.
+- **Spinner, not skeleton**, with a visible sentence (ADR 0003 amended).
+- **Shared components:** `Spinner` (status region), `ErrorBox` (alert + retry, one message per
+  `AppError` kind), `EmptyState` (heading + hint), `Avatar` (initials, hue by id).

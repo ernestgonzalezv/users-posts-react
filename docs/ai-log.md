@@ -54,3 +54,12 @@ The README summarises this file.
   fields. The gate closed the first cut of this work at 894 production lines; this is the first of three.
 - **Caught by the ratchet:** the API base URL in `di/` tripped `no-fetch-outside-core`; it moved to
   `core/config.ts`.
+## PR 3b — Ledger design system
+
+- **Asked:** the chosen design as tokens and four shared components, with the spinner replacing the
+  skeleton in ADR 0003, and nothing feature-specific.
+- **Accepted:** the palette and fonts from the design option, the components, the role mapping
+  (status, alert, heading).
+- **Corrected:** the first cut shipped these inside the users list PR, which the gate closed at 894
+  lines; the components came out alone, and their tests, which were only exercised through the list,
+  became their own files.
