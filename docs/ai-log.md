@@ -41,3 +41,19 @@ The README summarises this file.
   `develop` that was behind `origin/develop` by one merge, so both append-only ledgers conflicted and
   GitHub could not build the merge ref, which is why no check ran. Fixed by merging `develop` forward
   and keeping both sections; the branching rule now says `origin/develop` after a `git fetch`.
+
+## PR 3 — users list
+
+- **Asked:** the first vertical slice: DTO guard, mapper, repository, use case, container, a
+  `useResource` hook with the five states, and the list screen in the chosen design, with every state
+  reachable in the browser.
+- **Accepted:** the slice, the hook, the fake-fetch test helper, the Google Fonts pairing.
+- **Corrected:** the first `useResource` set state synchronously inside the effect and the React hooks
+  lint rejected it; it now derives `loading` from the last settled request. An inline emptiness
+  callback restarted the request on every render and a test timed out; the callback is read through
+  `useEffectEvent`. Constructor parameter properties are not erasable syntax; replaced with explicit
+  fields. In the browser the chosen row's chevron was pushed out because the text column had no
+  `min-width: 0`, and choosing a user left the main area blank; the user header fills it until the
+  posts land. The screenshot script split CSS selectors on `:`; it now uses `;` between fields.
+- **Caught by the ratchet:** the API base URL in `di/` tripped `no-fetch-outside-core`; it moved to
+  `core/config.ts`.

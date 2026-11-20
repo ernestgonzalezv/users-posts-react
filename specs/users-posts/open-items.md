@@ -36,3 +36,17 @@ Decided by Ernesto on 2026-11-20, reviewing the design options.
   amended in the PR that builds the first list.
 - **The 500-line ceiling held.** The first cut carried language and theme together at 562 production
   lines; the gate closed it and the theme switch moved to the next PR.
+
+## Design and the first screen (2026-11-20, PR 3)
+
+Decided by Ernesto on 2026-11-20, choosing among three design options.
+
+- **Ledger.** Warm paper, serif names and titles (Fraunces), Instrument Sans body, oxblood accent, four
+  avatar hues. Edges come from spacing and tint, not boxes. The dark palette lands with the theme
+  switch PR.
+- **Spinner, not skeleton**, with a visible sentence (ADR 0003 amended).
+- **Choosing a user shows the user header at once** (name, email, website, company) so the main area is
+  never blank; the posts PR adds the list and the form under it. **Pending**: on a phone the header
+  renders below the list; the posts PR decides whether to scroll to it or collapse the list.
+- **The API base URL lives in `core/config.ts`**, the one place the ratchet allows it outside the
+  client.
