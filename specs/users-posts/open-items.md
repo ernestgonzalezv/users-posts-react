@@ -15,3 +15,15 @@ Decided by Ernesto on 2026-11-20, while planning the test.
 - **Git.** Gitflow with `develop` and `main`, one branch per PR, merge commits, PR gates (ADR 0006).
 - **Authorship.** Single author, no trailers. AI usage is documented in `docs/ai-log.md` and the README.
 - **Repository visibility.** Private while the work is in progress, public at delivery.
+
+## Language switch (2026-11-20, PR 2)
+
+Decided by Ernesto on 2026-11-20, reviewing the design options.
+
+- **One segmented control for every switch** in the app bar, with radio semantics and arrow keys, so
+  the theme switch that follows costs one options array.
+- **The stored keys `locale` and `theme` are a contract**: a rename would reset every visitor's choice.
+- **Spinners for loading, not skeletons.** Supersedes the skeleton wording of ADR 0003; the ADR is
+  amended in the PR that builds the first list.
+- **The 500-line ceiling held.** The first cut carried language and theme together at 562 production
+  lines; the gate closed it and the theme switch moved to the next PR.

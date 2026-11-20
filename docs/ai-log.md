@@ -16,3 +16,15 @@ The README summarises this file.
   behaviour.
 - **Caught by the harness:** the placeholder `App` rendered a literal `<h1>` and the
   `no-literal-ui-text` ratchet failed on it; the placeholder became an empty `<main>` until i18n exists.
+
+## PR 2 — language switch
+
+- **Asked:** typed EN/ES dictionaries where a missing Spanish key fails `tsc`, typed placeholders, a
+  locale provider that writes `html lang`, and a segmented control for the switch.
+- **Accepted:** the template-literal placeholder typing, the storage helper with try/catch, the
+  radio-group semantics with a roving tabindex.
+- **Corrected:** the first draft exported hooks and providers from the same file and
+  `react-refresh/only-export-components` rejected it; hooks moved to `locale-context.ts`. The first
+  draft imported `en` as a value only to use `typeof en`; lint asked for `import type`. The first PR
+  bundled the theme switch too and the gate rejected it at 562 production lines; it was closed and
+  split, the theme switch becomes its own PR.
