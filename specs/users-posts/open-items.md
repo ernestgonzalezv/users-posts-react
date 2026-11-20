@@ -37,6 +37,16 @@ Decided by Ernesto on 2026-11-20, reviewing the design options.
 - **The 500-line ceiling held.** The first cut carried language and theme together at 562 production
   lines; the gate closed it and the theme switch moved to the next PR.
 
+## The users slice without its screen (2026-11-20, PR 3a)
+
+Decided by Ernesto's gate on 2026-11-20: the first cut of the users list weighed 894 production lines.
+
+- **Three PRs instead of one:** the data slice and the hook (this one), the design system, and the
+  screen. The first two are the horizontal exceptions the cutting rule allows; the screen is vertical.
+- **The API base URL lives in `core/config.ts`**, the one place the ratchet allows it outside the
+  client.
+- **`useResource` derives `loading`** from whether the last settled result belongs to the current
+  loader and attempt, instead of writing state inside the effect.
 ## Design system (2026-11-20, PR 3b)
 
 Decided by Ernesto on 2026-11-20, choosing among three design options.

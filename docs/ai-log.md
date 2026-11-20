@@ -42,6 +42,18 @@ The README summarises this file.
   GitHub could not build the merge ref, which is why no check ran. Fixed by merging `develop` forward
   and keeping both sections; the branching rule now says `origin/develop` after a `git fetch`.
 
+## PR 3a — users data slice and the resource hook
+
+- **Asked:** the data half of the first vertical slice, with no UI: DTO guard, mapper, repository,
+  use case, container, and a `useResource` hook with the five states.
+- **Accepted:** the slice, the hook, the test list.
+- **Corrected:** the first `useResource` set state synchronously inside the effect and the React hooks
+  lint rejected it; it now derives `loading` from the last settled request. An inline emptiness
+  callback restarted the request on every render and a test timed out; the callback is read through
+  `useEffectEvent`. Constructor parameter properties are not erasable syntax; replaced with explicit
+  fields. The gate closed the first cut of this work at 894 production lines; this is the first of three.
+- **Caught by the ratchet:** the API base URL in `di/` tripped `no-fetch-outside-core`; it moved to
+  `core/config.ts`.
 ## PR 3b — Ledger design system
 
 - **Asked:** the chosen design as tokens and four shared components, with the spinner replacing the
