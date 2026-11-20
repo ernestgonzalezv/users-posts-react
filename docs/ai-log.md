@@ -116,3 +116,12 @@ The README summarises this file.
   switch), the dark token block, the pre-paint script in `index.html`.
 - **Corrected:** the stacked-layout scroll test mocked `matchMedia` with `mockReturnValueOnce`, which
   the new provider consumed first; it now answers per query. The `AppBar` tests needed the provider.
+
+## PR 8 — edge cases
+
+- **Asked:** the remaining edge cases as App-level tests, so a regression in any slice shows as a
+  user-visible failure.
+- **Accepted:** seven integration tests over the real container with a routed fake `fetch`, the
+  `timeoutMs` option on the container, the corrected proof names in `plan.md`.
+- **Corrected:** the timeout test hung because the never-answering fake ignored the abort signal; it
+  now rejects with an `AbortError` on abort, like a real `fetch`.
