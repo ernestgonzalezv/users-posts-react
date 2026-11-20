@@ -6,7 +6,7 @@ export type Guard<T> = (value: unknown) => value is T
 export type FetchFunction = typeof fetch
 
 export interface RequestOptions {
-  readonly signal?: AbortSignal
+  readonly signal?: AbortSignal | undefined
 }
 
 interface HttpClientConfig {
