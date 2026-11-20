@@ -5,9 +5,10 @@ interface EmptyStateProps {
   readonly icon: ReactNode
   readonly title: string
   readonly hint: string
+  readonly action?: ReactNode
 }
 
-export function EmptyState({ icon, title, hint }: EmptyStateProps) {
+export function EmptyState({ icon, title, hint, action }: EmptyStateProps) {
   return (
     <div className={styles.empty}>
       <span className={styles.icon} aria-hidden="true">
@@ -15,6 +16,7 @@ export function EmptyState({ icon, title, hint }: EmptyStateProps) {
       </span>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.hint}>{hint}</p>
+      {action !== undefined && <div className={styles.action}>{action}</div>}
     </div>
   )
 }

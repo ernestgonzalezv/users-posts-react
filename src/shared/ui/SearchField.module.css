@@ -1,0 +1,61 @@
+.field {
+  position: relative;
+  display: grid;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 16px;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-2) 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--field);
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--text-sm);
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  display: none;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.clear {
+  position: absolute;
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sel);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}

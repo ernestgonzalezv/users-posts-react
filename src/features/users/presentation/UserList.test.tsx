@@ -85,3 +85,45 @@ describe('UserList', () => {
     expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
   })
 })
+
+describe('UserList search', () => {
+  it('filters by name or username ignoring case and accents, after the debounce', async () => {
+    renderList(fakeFetch(() => json(users)))
+    const box = await screen.findByRole('searchbox', { name: 'Search users' })
+    await userEvent.type(box, 'ÉRVIN')
+    expect(await screen.findByText('1 of 3')).toBeInTheDocument()
+    const rows = screen.getAllByRole('button', { name: /^Show posts by/ })
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toHaveAccessibleName('Show posts by Ervin Howell')
+    await userEvent.clear(box)
+    await userEvent.type(box, 'samantha')
+    expect(await screen.findByRole('button', { name: 'Show posts by Clementine Bauch' })).toBeInTheDocument()
+  })
+
+  it('keeps the full list until the debounce settles', async () => {
+    renderList(fakeFetch(() => json(users)))
+    const box = await screen.findByRole('searchbox', { name: 'Search users' })
+    await userEvent.type(box, 'zzz')
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(3)
+    expect(screen.getByText('3 users')).toBeInTheDocument()
+    expect(await screen.findByText('0 of 3')).toBeInTheDocument()
+    expect(screen.queryAllByRole('button', { name: /^Show posts by/ })).toHaveLength(0)
+  })
+
+  it('shows the no-match state with a button that restores everyone', async () => {
+    renderList(fakeFetch(() => json(users)))
+    await userEvent.type(await screen.findByRole('searchbox'), 'nobody here')
+    expect(await screen.findByRole('heading', { level: 3, name: 'No one matches “nobody here”' })).toBeInTheDocument()
+    expect(screen.getByText('0 of 3')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Clear search' }))
+    expect(await screen.findAllByRole('button', { name: /^Show posts by/ })).toHaveLength(3)
+    expect(screen.getByText('3 users')).toBeInTheDocument()
+    expect(screen.getByRole('searchbox')).toHaveValue('')
+  })
+
+  it('hides the search box while loading, on error and when the directory is empty', async () => {
+    renderList(fakeFetch(() => json([])))
+    await screen.findByRole('heading', { level: 3, name: 'No users yet' })
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument()
+  })
+})

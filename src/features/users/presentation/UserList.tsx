@@ -1,11 +1,15 @@
+import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
+import { useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
 import { Avatar } from '../../../shared/ui/Avatar'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
-import { ChevronRightIcon, UsersIcon } from '../../../shared/ui/icons'
+import { ChevronRightIcon, CloseIcon, SearchIcon, UsersIcon } from '../../../shared/ui/icons'
+import { SearchField } from '../../../shared/ui/SearchField'
 import { Spinner } from '../../../shared/ui/Spinner'
 import type { User } from '../domain/model/user'
 import { initialsOf } from '../domain/model/user'
+import { searchUsers } from '../domain/usecase/search-users'
 import styles from './UserList.module.css'
 import { useUsers } from './use-users'
 
@@ -17,6 +21,13 @@ interface UserListProps {
 export function UserList({ selectedId, onSelect }: UserListProps) {
   const t = useT()
   const { state, reload } = useUsers()
+  const [query, setQuery] = useState('')
+  const settledQuery = useDebouncedValue(query)
+  const loaded = state.status === 'success' ? state.data : null
+  const matches = loaded === null ? null : searchUsers(loaded, settledQuery)
+  const clearSearch = () => {
+    setQuery('')
+  }
 
   return (
     <section className={styles.panel} aria-labelledby="users-title" aria-busy={state.status === 'loading'}>
@@ -24,8 +35,19 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
         <h2 id="users-title" className={styles.title}>
           {t('users.title')}
         </h2>
-        {state.status === 'success' && <span className={styles.count}>{t('users.count', { count: state.data.length })}</span>}
+        {loaded !== null && matches !== null && (
+          <span className={styles.count} aria-live="polite">
+            {settledQuery.trim() === ''
+              ? t('users.count', { count: loaded.length })
+              : t('users.count.filtered', { count: matches.length, total: loaded.length })}
+          </span>
+        )}
       </div>
+      {loaded !== null && (
+        <div className={styles.search}>
+          <SearchField value={query} onChange={setQuery} label={t('users.search.label')} placeholder={t('users.search.placeholder')} />
+        </div>
+      )}
       {state.status === 'loading' && (
         <div className={styles.state}>
           <Spinner label={t('users.loading')} />
@@ -37,9 +59,22 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
         </div>
       )}
       {state.status === 'empty' && <EmptyState icon={<UsersIcon />} title={t('users.empty.title')} hint={t('users.empty.hint')} />}
-      {state.status === 'success' && (
+      {matches !== null && matches.length === 0 && (
+        <EmptyState
+          icon={<SearchIcon />}
+          title={t('users.nomatch.title', { query: settledQuery.trim() })}
+          hint={t('users.nomatch.hint')}
+          action={
+            <button type="button" onClick={clearSearch}>
+              <CloseIcon />
+              {t('action.clearSearch')}
+            </button>
+          }
+        />
+      )}
+      {matches !== null && matches.length > 0 && (
         <ul className={styles.list}>
-          {state.data.map((user) => (
+          {matches.map((user) => (
             <li key={user.id}>
               <button
                 type="button"
