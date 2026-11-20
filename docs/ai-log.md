@@ -37,3 +37,7 @@ The README summarises this file.
   draft imported `en` as a value only to use `typeof en`; lint asked for `import type`. The first PR
   bundled the theme switch too and the gate rejected it at 562 production lines; it was closed and
   split, the theme switch becomes its own PR.
+- **Caught by review:** Ernesto spotted two conflicts on the PR. The branch had been cut from a local
+  `develop` that was behind `origin/develop` by one merge, so both append-only ledgers conflicted and
+  GitHub could not build the merge ref, which is why no check ran. Fixed by merging `develop` forward
+  and keeping both sections; the branching rule now says `origin/develop` after a `git fetch`.

@@ -19,7 +19,7 @@ The loop is: **gather context -> make the smallest correct change -> verify -> r
 
 ## Git
 
-- Branch from `develop` with `--no-track`, one branch per PR, named `type/slug`.
+- Branch from `origin/develop` after a `git fetch`, with `--no-track`; one branch per PR, named `type/slug`.
 - Conventional commits in English, lowercase, imperative, one behaviour each. Single author, no trailers,
   no tool names in messages.
 - Commit and push only after Ernesto says yes. Never force-push. Never merge: a human merges.
