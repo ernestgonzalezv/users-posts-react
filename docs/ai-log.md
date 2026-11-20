@@ -16,3 +16,13 @@ The README summarises this file.
   behaviour.
 - **Caught by the harness:** the placeholder `App` rendered a literal `<h1>` and the
   `no-literal-ui-text` ratchet failed on it; the placeholder became an empty `<main>` until i18n exists.
+
+## PR 1 — result type, app error and http client
+
+- **Asked:** a `Result<T>` with a `Failure` independent of `T`, an `AppError` union by `kind`, and an
+  `HttpClient` that never throws, with a timeout and caller-side abort, validated by type guards.
+- **Accepted:** the discriminated unions, the guard-based decoding, the test list.
+- **Corrected:** the first version tracked the timeout with a `let` flag mutated inside the timer
+  callback; `@typescript-eslint/no-unnecessary-condition` flagged the check as always false because
+  TypeScript does not see closure writes. Replaced with a small holder object. The lint rule caught it
+  before a test did.
