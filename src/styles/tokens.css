@@ -40,21 +40,3 @@
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
-  --bg: #0f1216;
-  --fg: #e8ebf0;
-  --muted: #98a2ae;
-  --line: #262c35;
-  --bar: #161a20;
-  --side: #12161b;
-  --field: #161a20;
-  --sel: #1d232c;
-  --accent: #86b7e8;
-  --accent-soft: #1e2c3d;
-  --on-accent: #0f1216;
-  --danger: #f58a80;
-  --ok: #8fd6a4;
-  --ok-soft: #1d3324;
-
-  color-scheme: dark;
-}

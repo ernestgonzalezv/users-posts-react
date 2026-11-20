@@ -2,7 +2,6 @@ import { useT } from '../../i18n/locale-context'
 import styles from './AppBar.module.css'
 import { LogoIcon } from './icons'
 import { LanguageSwitch } from './LanguageSwitch'
-import { ThemeSwitch } from './ThemeSwitch'
 
 export function AppBar() {
   const t = useT()
@@ -16,7 +15,6 @@ export function AppBar() {
       </h1>
       <div className={styles.tools}>
         <LanguageSwitch />
-        <ThemeSwitch />
       </div>
     </header>
   )
