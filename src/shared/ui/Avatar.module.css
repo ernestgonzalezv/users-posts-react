@@ -1,0 +1,28 @@
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size, 32px);
+  height: var(--avatar-size, 32px);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: calc(var(--avatar-size, 32px) * 0.36);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hue1 {
+  background: var(--hue-1);
+}
+
+.hue2 {
+  background: var(--hue-2);
+}
+
+.hue3 {
+  background: var(--hue-3);
+}
+
+.hue4 {
+  background: var(--hue-4);
+}

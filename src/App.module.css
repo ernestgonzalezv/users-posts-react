@@ -1,0 +1,34 @@
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100%;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  min-height: 0;
+}
+
+.side {
+  background: var(--side);
+  padding-top: var(--space-4);
+  min-height: 0;
+}
+
+.main {
+  padding: var(--space-5) var(--space-6);
+  min-width: 0;
+  scroll-margin-top: var(--space-3);
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .main {
+    padding: var(--space-4);
+    min-height: 100dvh;
+  }
+}
