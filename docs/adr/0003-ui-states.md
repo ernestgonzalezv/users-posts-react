@@ -10,7 +10,7 @@ Every screen that loads data resolves five states, explicitly, from one `useReso
 | State | What the user sees |
 |---|---|
 | `idle` | nothing requested yet (a user not chosen) — a hint, not a blank |
-| `loading` | skeleton rows where a list will appear; a spinner only where there is no shape to hint |
+| `loading` | a spinner with a visible sentence ("Loading users…"), announced to screen readers; never a bare blank |
 | `success` | the data |
 | `empty` | a sentence that says how data gets here, never a bare "no results" |
 | `error` | the translated message for the error kind and a retry button, without losing the rest of the screen |
@@ -27,6 +27,8 @@ pair of booleans removes the impossible combinations (`isLoading && isError`) by
 ## Rejected
 
 - `isLoading` / `isError` booleans: four combinations, two of them nonsense.
+- Skeleton rows for loading: rejected by Ernesto on 2026-11-20 while reviewing the design options; a
+  spinner with a sentence is the house loading state.
 - Reusing the list's state for the form: a failed post would wipe the posts already shown.
 
 ## Enforced by
