@@ -36,3 +36,14 @@ Decided by Ernesto on 2026-11-20, reviewing the design options.
   amended in the PR that builds the first list.
 - **The 500-line ceiling held.** The first cut carried language and theme together at 562 production
   lines; the gate closed it and the theme switch moved to the next PR.
+
+## Design system (2026-11-20, PR 3b)
+
+Decided by Ernesto on 2026-11-20, choosing among three design options.
+
+- **Ledger.** Warm paper, serif names and titles (Fraunces), Instrument Sans body, oxblood accent, four
+  avatar hues. Edges come from spacing and tint, not boxes. The dark palette lands with the theme
+  switch PR.
+- **Spinner, not skeleton**, with a visible sentence (ADR 0003 amended).
+- **Shared components:** `Spinner` (status region), `ErrorBox` (alert + retry, one message per
+  `AppError` kind), `EmptyState` (heading + hint), `Avatar` (initials, hue by id).
