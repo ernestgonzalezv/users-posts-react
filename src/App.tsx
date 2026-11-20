@@ -11,6 +11,7 @@ import { useT } from './i18n/locale-context'
 import { AppBar } from './shared/ui/AppBar'
 import { EmptyState } from './shared/ui/EmptyState'
 import { InboxIcon } from './shared/ui/icons'
+import { ThemeProvider } from './theme/ThemeProvider'
 
 const STACKED_LAYOUT = '(max-width: 720px)'
 
@@ -52,10 +53,12 @@ export function App({ container }: AppProps) {
   return (
     <ContainerProvider container={container}>
       <LocaleProvider>
-        <div className={styles.shell}>
-          <AppBar />
-          <Workspace />
-        </div>
+        <ThemeProvider>
+          <div className={styles.shell}>
+            <AppBar />
+            <Workspace />
+          </div>
+        </ThemeProvider>
       </LocaleProvider>
     </ContainerProvider>
   )

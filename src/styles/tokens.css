@@ -45,3 +45,29 @@
 
   color-scheme: light;
 }
+
+:root[data-theme='dark'] {
+  --bg: #19160f;
+  --fg: #f1eadb;
+  --muted: #aaa08c;
+  --line: #332d22;
+  --bar: #221d14;
+  --side: #1e1a12;
+  --field: #262117;
+  --sel: #2d271b;
+  --accent: #ea8d96;
+  --accent-soft: #3f2327;
+  --on-accent: #19160f;
+  --danger: #f58a80;
+  --danger-soft: #3a1f1c;
+  --ok: #93d9a8;
+  --ok-soft: #1f3626;
+  --highlight: #2a2215;
+  --hue-1: #d2606a;
+  --hue-2: #d9a040;
+  --hue-3: #56a493;
+  --hue-4: #8393d0;
+  --shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
