@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { createContainer } from './di/container'
 import './styles/tokens.css'
 import './styles/global.css'
 
@@ -11,6 +12,6 @@ if (container === null) {
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <App container={createContainer()} />
   </StrictMode>,
 )
