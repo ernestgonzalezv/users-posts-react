@@ -73,3 +73,14 @@ The README summarises this file.
 - **Corrected:** in the browser the chosen row's chevron was pushed out because the text column had
   no `min-width: 0`; choosing a user left the main area blank, so the user header fills it until the
   posts land. The screenshot script split CSS selectors on `:`; it now uses `;` between fields.
+
+## PR 4 — debounced user search
+
+- **Asked:** search by name with a debounce, case and accent insensitive, with a visible no-match
+  state and a way out of it.
+- **Accepted:** the pure `searchUsers` use case (also matches the username), the generic
+  `useDebouncedValue` hook, the `SearchField` component, the `n of total` pill.
+- **Corrected:** the list test that freezes time hung under Vitest fake timers with React 19 and
+  jsdom; it now runs on real timers and asserts the full list right after typing and the filtered
+  one after the debounce. Two early assertions used `findAllByRole`, which resolved on the stale
+  list before the debounce; they wait for the count pill instead.
