@@ -18,13 +18,14 @@ Testing Library, in English and Spanish.
 
 ```
 src/
-  core/              Result<T>, AppError, HttpClient
+  core/              Result<T>, AppError, HttpClient, storage, config
   i18n/              typed dictionaries (en.ts is the source of truth), LocaleProvider, useT()
-  shared/ui/         Skeleton, ErrorBox, EmptyState, Toast, LanguageSwitch
-  shared/presentation/  useResource, useDebouncedValue
+  theme/             ThemeProvider, theme-context, theme (stored choice, then prefers-color-scheme)
+  shared/ui/         AppBar, SegmentedControl, LanguageSwitch, ThemeSwitch, SearchField, Spinner, ErrorBox, EmptyState, Toast, Avatar, icons
+  shared/presentation/  useResource, useDebouncedValue, errorMessage
   features/<f>/      domain/{model,repository,usecase}  data/{dto,mapper,repository}  presentation/
   di/container.ts    wires HttpClient -> repositories -> use cases
-  styles/tokens.css  the only place a colour or a spacing value is written
+  styles/tokens.css  the only place a colour or a spacing value is written (light block + dark block)
 ```
 
 ## Where the rules live
