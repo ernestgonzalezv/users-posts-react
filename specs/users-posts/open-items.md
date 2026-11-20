@@ -57,3 +57,13 @@ Decided by Ernesto on 2026-11-20, choosing among three design options.
 - **Spinner, not skeleton**, with a visible sentence (ADR 0003 amended).
 - **Shared components:** `Spinner` (status region), `ErrorBox` (alert + retry, one message per
   `AppError` kind), `EmptyState` (heading + hint), `Avatar` (initials, hue by id).
+
+## The users screen (2026-11-20, PR 3c)
+
+Decided by Ernesto on 2026-11-20.
+
+- **Choosing a user shows the user header at once** (name, email, website, company) so the main area is
+  never blank; the posts PR adds the list and the form under it. **Pending**: on a phone the header
+  renders below the list; the posts PR decides whether to scroll to it or collapse the list.
+- **A row is a button with `aria-pressed`** and the accessible name "Show posts by <name>"; the name
+  tells a screen reader what the press does, which the visible text alone does not.
