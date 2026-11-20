@@ -67,3 +67,14 @@ Decided by Ernesto on 2026-11-20.
   renders below the list; the posts PR decides whether to scroll to it or collapse the list.
 - **A row is a button with `aria-pressed`** and the accessible name "Show posts by <name>"; the name
   tells a screen reader what the press does, which the visible text alone does not.
+
+## Search (2026-11-20, PR 4)
+
+Decided by Ernesto on 2026-11-20.
+
+- **The search is local** over the ten loaded users; the API has no name filter and the list is tiny,
+  so a request per keystroke would only add latency and failure states.
+- **The debounce is 300 ms** between the last keystroke and the filter; the box itself updates at once.
+- **Name and username both match**, case and accent insensitive on both sides (`Érvin` finds `Ervin`).
+- **Zero matches is its own state** with the query echoed and a "Clear search" action; the pill reads
+  `0 of 10` so the total is never lost.
