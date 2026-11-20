@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './App.module.css'
 import type { Container } from './di/container'
 import { ContainerProvider } from './di/ContainerProvider'
+import { PostList } from './features/posts/presentation/PostList'
 import type { User } from './features/users/domain/model/user'
 import { UserHeader } from './features/users/presentation/UserHeader'
 import { UserList } from './features/users/presentation/UserList'
@@ -11,6 +12,8 @@ import { AppBar } from './shared/ui/AppBar'
 import { EmptyState } from './shared/ui/EmptyState'
 import { InboxIcon } from './shared/ui/icons'
 
+const STACKED_LAYOUT = '(max-width: 720px)'
+
 interface AppProps {
   readonly container: Container
 }
@@ -18,16 +21,27 @@ interface AppProps {
 function Workspace() {
   const t = useT()
   const [selected, setSelected] = useState<User | null>(null)
+  const main = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (selected !== null && window.matchMedia(STACKED_LAYOUT).matches) {
+      main.current?.scrollIntoView({ block: 'start' })
+    }
+  }, [selected])
+
   return (
     <div className={styles.layout}>
       <aside className={styles.side}>
         <UserList selectedId={selected?.id ?? null} onSelect={setSelected} />
       </aside>
-      <main className={styles.main}>
+      <main ref={main} className={styles.main}>
         {selected === null ? (
           <EmptyState icon={<InboxIcon />} title={t('posts.idle.title')} hint={t('posts.idle.hint')} />
         ) : (
-          <UserHeader user={selected} />
+          <>
+            <UserHeader user={selected} />
+            <PostList user={selected} />
+          </>
         )}
       </main>
     </div>

@@ -19,6 +19,7 @@
 .main {
   padding: var(--space-5) var(--space-6);
   min-width: 0;
+  scroll-margin-top: var(--space-3);
 }
 
 @media (max-width: 720px) {
@@ -28,5 +29,6 @@
 
   .main {
     padding: var(--space-4);
+    min-height: 100dvh;
   }
 }

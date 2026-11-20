@@ -9,6 +9,12 @@ describe('createContainer', () => {
     expect(fetchFunction.mock.calls[0]![0]).toBe('https://jsonplaceholder.typicode.com/users')
   })
 
+  it('wires the posts use case to the same client', async () => {
+    const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(new Response('[]'))
+    await createContainer({ fetchFunction }).getUserPosts.execute(4)
+    expect(fetchFunction.mock.calls[0]![0]).toBe('https://jsonplaceholder.typicode.com/posts?userId=4')
+  })
+
   it('honours a custom base url', async () => {
     const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(new Response('[]'))
     await createContainer({ baseUrl: 'http://localhost:9999/', fetchFunction }).getUsers.execute()

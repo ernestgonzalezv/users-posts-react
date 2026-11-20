@@ -78,3 +78,14 @@ Decided by Ernesto on 2026-11-20.
 - **Name and username both match**, case and accent insensitive on both sides (`Érvin` finds `Ervin`).
 - **Zero matches is its own state** with the query echoed and a "Clear search" action; the pill reads
   `0 of 10` so the total is never lost.
+
+## Posts (2026-11-20, PR 5)
+
+Decided on 2026-11-20 while building PR 5; Ernesto can reverse any of these in a later PR.
+
+- **On a phone the list stays and the page scrolls to the detail** when a user is chosen, instead of
+  collapsing the list; the `main` is at least one screen tall so the scroll always lands.
+- **A stale answer is dropped by aborting**, not by comparing ids: the loader changes with the user id,
+  `useResource` cancels the previous request, and the screen shows the spinner until the current one lands.
+- **Title and body are trimmed in the mapper**; the first letter is capitalised with CSS only, the data
+  stays as the API sent it.

@@ -84,3 +84,15 @@ The README summarises this file.
   jsdom; it now runs on real timers and asserts the full list right after typing and the filtered
   one after the debounce. Two early assertions used `findAllByRole`, which resolved on the stale
   list before the debounce; they wait for the count pill instead.
+
+## PR 5 — user posts
+
+- **Asked:** the posts of the chosen user under the header, every state, a stale answer never
+  overwriting the current user, and the pending phone decision.
+- **Accepted:** the posts slice mirroring the users one, the `useUserPosts` hook keyed on the user id,
+  the numbered list, the posts-only fetch overrides in the screenshot run.
+- **Corrected:** `window.matchMedia` does not exist in jsdom, so the setup file stubs it along with
+  `scrollIntoView`. On the phone the first screenshot showed the detail halfway down: the scroll ran
+  while the main area was still short (header plus spinner), so the page had no room to scroll; the
+  stacked `main` now has `min-height: 100dvh`. The smooth behaviour moved from the JS call to CSS so
+  `prefers-reduced-motion` turns it off.
