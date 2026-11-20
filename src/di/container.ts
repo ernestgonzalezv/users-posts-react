@@ -16,12 +16,14 @@ export interface Container {
 interface ContainerConfig {
   readonly baseUrl?: string
   readonly fetchFunction?: FetchFunction
+  readonly timeoutMs?: number
 }
 
 export const createContainer = (config: ContainerConfig = {}): Container => {
   const http = new HttpClient({
     baseUrl: config.baseUrl ?? API_BASE_URL,
     ...(config.fetchFunction === undefined ? {} : { fetchFunction: config.fetchFunction }),
+    ...(config.timeoutMs === undefined ? {} : { timeoutMs: config.timeoutMs }),
   })
   const users = new HttpUserRepository(http)
   const posts = new HttpPostRepository(http)

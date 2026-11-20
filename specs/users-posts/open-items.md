@@ -114,3 +114,9 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   `src/`; the provider then owns it.
 - **Dark palette** is the Ledger dark set from the chosen design artifact; every colour lives in
   `tokens.css`, components never branch on the theme.
+
+## Edge cases (2026-11-20, PR 8)
+
+- **Written posts are lost when the user changes** because JSONPlaceholder does not persist them and
+  the list is keyed by user; keeping them in memory per user is listed as a next step in the README.
+- **The container accepts `timeoutMs`** only so tests can shorten the watchdog; the app keeps 10 s.
