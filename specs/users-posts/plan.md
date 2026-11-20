@@ -11,13 +11,13 @@ release PR at the end.
 | # | Invariant | Owner PR | Proof |
 |---|---|---|---|
 | I1 | The data layer never throws; every failure is a `Failure` with an `AppError` | PR 1 | `http-client.test.ts` |
-| I2 | A late response never overwrites a newer one | PR 5 | `use-resource.test.ts` "ignores a response for inputs that changed" |
+| I2 | A late response never overwrites a newer one | PR 5 | `use-resource.test.ts` "aborts the previous request and ignores its late answer when the loader changes", `PostList.test.tsx` "drops the answer of a previous user that lands after switching" |
 | I3 | A missing Spanish key does not compile | PR 2 | `tsc` on `es.ts` |
 | I4 | Search ignores case and accents | PR 4 | `search-users.test.ts` |
 | I5 | A post is never sent with an empty title or body | PR 6 | `create-post.test.ts` |
 | I6 | A double click on submit sends one request | PR 6 | `NewPostForm.test.tsx` |
 | I7 | A failed creation keeps the draft and the list intact | PR 6 | `NewPostForm.test.tsx` |
-| I8 | Switching language keeps the chosen user and the draft | PR 2, PR 6 | `App.test.tsx` |
+| I8 | Switching language keeps the chosen user and the draft | PR 2, PR 6, PR 7 | `App.test.tsx`, `App.edge.test.tsx` |
 
 ## PRs
 
