@@ -96,3 +96,14 @@ The README summarises this file.
   while the main area was still short (header plus spinner), so the page had no room to scroll; the
   stacked `main` now has `min-height: 100dvh`. The smooth behaviour moved from the JS call to CSS so
   `prefers-reduced-motion` turns it off.
+
+## PR 6 — new post form
+
+- **Asked:** a validated form, one request per submit, the created post inserted at the top with a toast,
+  the draft kept when the server fails.
+- **Accepted:** the `CreatePost` use case with the pure `validateDraft`, the form with fault codes
+  translated in the UI, the `Toast`, the local negative ids because the API always answers `101`.
+- **Corrected:** the first draft validated inside the async submit after flipping to `submitting`, so
+  the faulty field was still `disabled` when it was focused and the focus test failed; validation
+  now runs synchronously before the submitting state. `FormEvent` is deprecated in the React 19
+  types; the handler takes the minimal `{ preventDefault }` shape instead.
