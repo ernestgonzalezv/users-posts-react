@@ -26,3 +26,18 @@ The README summarises this file.
   callback; `@typescript-eslint/no-unnecessary-condition` flagged the check as always false because
   TypeScript does not see closure writes. Replaced with a small holder object. The lint rule caught it
   before a test did.
+## PR 2 — language switch
+
+- **Asked:** typed EN/ES dictionaries where a missing Spanish key fails `tsc`, typed placeholders, a
+  locale provider that writes `html lang`, and a segmented control for the switch.
+- **Accepted:** the template-literal placeholder typing, the storage helper with try/catch, the
+  radio-group semantics with a roving tabindex.
+- **Corrected:** the first draft exported hooks and providers from the same file and
+  `react-refresh/only-export-components` rejected it; hooks moved to `locale-context.ts`. The first
+  draft imported `en` as a value only to use `typeof en`; lint asked for `import type`. The first PR
+  bundled the theme switch too and the gate rejected it at 562 production lines; it was closed and
+  split, the theme switch becomes its own PR.
+- **Caught by review:** Ernesto spotted two conflicts on the PR. The branch had been cut from a local
+  `develop` that was behind `origin/develop` by one merge, so both append-only ledgers conflicted and
+  GitHub could not build the merge ref, which is why no check ran. Fixed by merging `develop` forward
+  and keeping both sections; the branching rule now says `origin/develop` after a `git fetch`.
