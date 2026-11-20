@@ -31,6 +31,24 @@ describe('HttpPostRepository', () => {
     expect(result).toEqual({ ok: false, error: { kind: 'http', status: 503 } })
   })
 
+  it('posts the draft as json and maps the answer', async () => {
+    const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(
+      new Response(JSON.stringify({ id: 101, userId: 3, title: 'Hello', body: 'World' }), { status: 201 }),
+    )
+    const result = await repositoryWith(fetchFunction).create({ userId: 3, title: 'Hello', body: 'World' })
+    const [url, init] = fetchFunction.mock.calls[0]!
+    expect(url).toBe('https://api.test/posts')
+    expect(init?.method).toBe('POST')
+    expect(init?.body).toBe('{"userId":3,"title":"Hello","body":"World"}')
+    expect(result).toEqual({ ok: true, value: { id: 101, userId: 3, title: 'Hello', body: 'World' } })
+  })
+
+  it('reports a parse failure when the created post comes back malformed', async () => {
+    const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(new Response('{"id":101}', { status: 201 }))
+    const result = await repositoryWith(fetchFunction).create({ userId: 3, title: 'Hello', body: 'World' })
+    expect(result).toEqual({ ok: false, error: { kind: 'parse' } })
+  })
+
   it('forwards the abort signal', async () => {
     const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(new Response('[]'))
     const controller = new AbortController()

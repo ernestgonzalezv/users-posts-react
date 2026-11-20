@@ -116,3 +116,15 @@ export const FileTextIcon = (props: IconProps) => (
     <path d="M14 3v5h5M9 13h6M9 17h6" />
   </Icon>
 )
+
+export const SendIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M21 3 10 14M21 3l-7 18-4-7-7-4z" />
+  </Icon>
+)
+
+export const CheckIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="m5 12 4.5 4.5L19 7" />
+  </Icon>
+)
