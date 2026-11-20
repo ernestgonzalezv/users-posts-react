@@ -12,5 +12,6 @@ alwaysApply: true
 - Never fix a screen problem by duplicating state. One source of truth per concern.
 - Never delete a file without checking nothing references it.
 - Never read or commit secrets.
-- Branches: `git checkout -b <branch> --no-track develop`; publish with `git push -u origin <branch>`.
+- Branches: `git fetch origin && git checkout -b <branch> --no-track origin/develop`, never from a local
+  `develop` that may be behind; publish with `git push -u origin <branch>`.
   Never force-push a shared branch.

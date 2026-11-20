@@ -21,7 +21,8 @@ foundation with no UI (`core/`, i18n). From then on every PR is named after what
 
 ## One branch per PR
 
-Cut from `develop` with `git checkout -b <branch> --no-track develop`, never from the previous PR. The
+Cut from `origin/develop` with `git fetch origin && git checkout -b <branch> --no-track origin/develop`, never
+from the previous PR and never from a local `develop` that may be behind. The
 `After` column of `plan.md` is the only ordering mechanism.
 
 ## The PR

@@ -25,3 +25,14 @@ Decided by Ernesto on 2026-11-20, reviewing PR 1.
   contract. **Pending** nothing; revisit if a third resource appears.
 - **Timeout 10 s.** JSONPlaceholder answers in under a second; 10 s is long enough for a slow mobile
   link and short enough that a hung request surfaces as an error the user can retry.
+## Language switch (2026-11-20, PR 2)
+
+Decided by Ernesto on 2026-11-20, reviewing the design options.
+
+- **One segmented control for every switch** in the app bar, with radio semantics and arrow keys, so
+  the theme switch that follows costs one options array.
+- **The stored keys `locale` and `theme` are a contract**: a rename would reset every visitor's choice.
+- **Spinners for loading, not skeletons.** Supersedes the skeleton wording of ADR 0003; the ADR is
+  amended in the PR that builds the first list.
+- **The 500-line ceiling held.** The first cut carried language and theme together at 562 production
+  lines; the gate closed it and the theme switch moved to the next PR.

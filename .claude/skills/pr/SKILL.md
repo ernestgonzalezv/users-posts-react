@@ -8,7 +8,8 @@ description: Take the current work from a dirty tree to an open PR, the house wa
 1. **Verify**: run the `verify` skill end to end. Nothing goes out red.
 2. **Size**: `git diff --numstat develop...HEAD | grep -vE '\.test\.tsx?|src/test/' | grep src/`;
    500 production lines is a ceiling.
-3. **Branch and commit, asking first**: branch `type/slug` cut from `develop` with `--no-track`. Conventional
+3. **Branch and commit, asking first**: branch `type/slug` cut from `origin/develop` after a `git fetch`, with
+   `--no-track`. Conventional
    commits, English, lowercase, one behaviour each. Do not run `git commit` or `git push` until Ernesto says yes.
 4. **Open**: `gh pr create --base develop --title "<type>: <subject>" --body ""`. The body is empty.
 5. **Document as a comment**: `gh pr comment <n> --body-file .harness/pr-body.md` with `## Manual tests`
