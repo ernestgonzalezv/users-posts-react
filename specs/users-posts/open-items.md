@@ -89,3 +89,17 @@ Decided on 2026-11-20 while building PR 5; Ernesto can reverse any of these in a
   `useResource` cancels the previous request, and the screen shows the spinner until the current one lands.
 - **Title and body are trimmed in the mapper**; the first letter is capitalised with CSS only, the data
   stays as the API sent it.
+
+## New post (2026-11-20, PR 6)
+
+Decided on 2026-11-20 while building PR 6; Ernesto can reverse any of these in a later PR.
+
+- **Validation lives in the domain** (`validateDraft`): title and body required after trimming, 100 and
+  1000 characters at most. The form shows fault codes translated per locale and never blocks typing with
+  `maxLength`; the counter turns red past the limit and the submit reports the fault.
+- **Written posts get local negative ids** (`-1`, `-2`, …) because JSONPlaceholder answers `id: 101` to
+  every POST; they carry a "New" badge and sit at the top until the user changes.
+- **A failed creation keeps the draft** and shows the error inline with a Retry that resubmits the same
+  draft; the list is untouched.
+- **One request per submit**: the button and the fields are disabled while submitting and the handler
+  returns early if a submission is in flight.

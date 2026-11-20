@@ -64,6 +64,39 @@ describe('PostList', () => {
     expect(await screen.findByText('2 posts')).toBeInTheDocument()
   })
 
+  it('inserts every written post at the top with its own key, shows the badge and the toast', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST' ? json({ id: 101, userId: 3, title: 'Fresh', body: 'Ink' }, 201) : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    for (const title of ['First', 'Second']) {
+      await userEvent.type(screen.getByLabelText('Title'), title)
+      await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+      await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+      await screen.findByText(`${String(['First', 'Second'].indexOf(title) + 3)} posts`)
+    }
+    const headings = screen.getAllByRole('heading', { level: 4 })
+    expect(headings).toHaveLength(4)
+    expect(headings[0]).toHaveTextContent('Fresh')
+    expect(headings[1]).toHaveTextContent('Fresh')
+    expect(screen.getAllByText('New')).toHaveLength(2)
+    expect(screen.getByRole('status')).toHaveTextContent('Published. Your post is at the top of the list.')
+  })
+
+  it('turns the empty state into a list when the first post is written', async () => {
+    const fetchFunction = fakeFetch((_url, init) =>
+      init?.method === 'POST' ? json({ id: 101, userId: 3, title: 'Only one', body: 'So far' }, 201) : json([]),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByRole('heading', { level: 3, name: 'No posts yet' })
+    await userEvent.type(screen.getByLabelText('Title'), 'Only one')
+    await userEvent.type(screen.getByLabelText('Body'), 'So far')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(await screen.findByText('1 posts')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 3, name: 'No posts yet' })).not.toBeInTheDocument()
+  })
+
   it('drops the answer of a previous user that lands after switching', async () => {
     let releaseFirst: (response: Response) => void = () => undefined
     const first = new Promise<Response>((resolve) => {

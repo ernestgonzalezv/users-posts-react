@@ -40,7 +40,7 @@ function Workspace() {
         ) : (
           <>
             <UserHeader user={selected} />
-            <PostList user={selected} />
+            <PostList key={selected.id} user={selected} />
           </>
         )}
       </main>
