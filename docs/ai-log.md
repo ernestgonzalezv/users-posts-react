@@ -125,3 +125,10 @@ The README summarises this file.
   `timeoutMs` option on the container, the corrected proof names in `plan.md`.
 - **Corrected:** the timeout test hung because the never-answering fake ignored the abort signal; it
   now rejects with an `AbortError` on abort, like a real `fetch`.
+
+## PR 9 — readme
+
+- **Asked:** the README the brief asks for: how to run, the decisions, the next steps, how the AI was
+  used; in English, summarising this ledger.
+- **Accepted:** the README, the refreshed structure block in `CLAUDE.md`.
+- **Corrected:** nothing; the first draft listed the test counts from the suite as it is.
