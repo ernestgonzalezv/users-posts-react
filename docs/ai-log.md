@@ -179,3 +179,11 @@ The README summarises this file.
 - **Corrected:** one keyed fragment for the pair, a test that asserts a single header after a second
   choice, and the test setup now fails any test that triggers `console.error`; with that rule and
   without the fix, five existing tests go red.
+
+## PR 15 — codecov
+
+- **Asked:** coverage on Codecov instead of Codemagic, which Ernesto does not have.
+- **Accepted:** the `codecov-action` upload inside the verify job with `use_oidc`, the lcov reporter,
+  the Codecov badge in the README, `codecov.yml` aligned with the local thresholds.
+- **Removed:** the badges branch job, `scripts/coverage-badge.sh`, `codemagic.yaml` and their
+  README paragraphs; the generated `badges` branch is deleted after the merge.
