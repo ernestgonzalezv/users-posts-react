@@ -158,3 +158,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   the key now.
 - **A `console.error` during a test fails the test** (`src/test/setup.ts`), so a React warning can no
   longer pass unnoticed through a green suite.
+
+## Codecov (2026-11-21, PR 15)
+
+- **Codecov replaces the self-hosted badge and Codemagic**: Ernesto has the Codecov GitHub App, so
+  every CI run uploads `lcov.info` through OIDC with no token in the repository; the `badges` branch,
+  the badge script and `codemagic.yaml` are gone.
+- **`codecov.yml`**: project status at 95 % with 1 % tolerance, patch status informational at 90 %, a
+  condensed comment only when coverage changes.
