@@ -1,27 +1,27 @@
 import { useId, useRef, useState } from 'react'
 import type { AppError } from '../../../core/app-error'
-import { useContainer } from '../../../di/container-context'
 import { useT } from '../../../i18n/locale-context'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
 import { SendIcon } from '../../../shared/ui/icons'
 import { Spinner } from '../../../shared/ui/Spinner'
+import type { NewPost } from '../domain/model/new-post'
 import { BODY_MAX, TITLE_MAX } from '../domain/model/new-post'
-import type { Post } from '../domain/model/post'
-import type { DraftFaults, FieldFault } from '../domain/usecase/create-post'
+import type { DraftFaults, FieldFault, Publish } from '../domain/usecase/create-post'
 import { normalizeTitle, validateDraft } from '../domain/usecase/create-post'
 import styles from './NewPostForm.module.css'
 
 interface NewPostFormProps {
   readonly userId: number
-  readonly onCreated: (post: Post) => void
+  readonly onSubmit: Publish
 }
 
 type Submission =
-  { readonly status: 'idle' } | { readonly status: 'submitting' } | { readonly status: 'failed'; readonly error: AppError }
+  | { readonly status: 'idle' }
+  | { readonly status: 'submitting' }
+  | { readonly status: 'failed'; readonly error: AppError; readonly draft: NewPost }
 
-export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
+export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
   const t = useT()
-  const { createPost } = useContainer()
   const id = useId()
   const titleRef = useRef<HTMLInputElement>(null)
   const bodyRef = useRef<HTMLTextAreaElement>(null)
@@ -34,8 +34,22 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
   const faultText = (fault: FieldFault | undefined, max: number): string | null =>
     fault === undefined ? null : fault === 'required' ? t('form.fault.required') : t('form.fault.too-long', { max })
 
-  const submit = async (event?: { preventDefault: () => void }) => {
-    event?.preventDefault()
+  const send = async (draft: NewPost) => {
+    setSubmission({ status: 'submitting' })
+    setTitle('')
+    setBody('')
+    const result = await onSubmit(draft)
+    if (result.ok) {
+      setSubmission({ status: 'idle' })
+      return
+    }
+    setTitle((current) => (current === '' ? draft.title : current))
+    setBody((current) => (current === '' ? draft.body : current))
+    setSubmission({ status: 'failed', error: result.error, draft })
+  }
+
+  const submit = (event: { preventDefault: () => void }) => {
+    event.preventDefault()
     if (busy) {
       return
     }
@@ -50,16 +64,7 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
       bodyRef.current?.focus()
       return
     }
-    setSubmission({ status: 'submitting' })
-    const result = await createPost.execute(draft)
-    if (result.ok) {
-      setTitle('')
-      setBody('')
-      setSubmission({ status: 'idle' })
-      onCreated(result.value)
-      return
-    }
-    setSubmission({ status: 'failed', error: result.error })
+    void send(draft)
   }
 
   const titleLength = normalizeTitle(title).length
@@ -68,15 +73,7 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
   const bodyFault = faultText(faults.body, BODY_MAX)
 
   return (
-    <form
-      className={styles.form}
-      aria-labelledby={`${id}-heading`}
-      aria-busy={busy}
-      noValidate
-      onSubmit={(event) => {
-        void submit(event)
-      }}
-    >
+    <form className={styles.form} aria-labelledby={`${id}-heading`} aria-busy={busy} noValidate onSubmit={submit}>
       <h3 id={`${id}-heading`} className={styles.heading}>
         {t('form.heading')}
       </h3>
@@ -93,7 +90,6 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
           className={styles.input}
           value={title}
           placeholder={t('form.title.placeholder')}
-          disabled={busy}
           aria-invalid={titleFault !== null}
           aria-describedby={titleFault === null ? undefined : `${id}-title-fault`}
           onChange={(event) => {
@@ -120,7 +116,6 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
           value={body}
           rows={4}
           placeholder={t('form.body.placeholder')}
-          disabled={busy}
           aria-invalid={bodyFault !== null}
           aria-describedby={bodyFault === null ? undefined : `${id}-body-fault`}
           onChange={(event) => {
@@ -137,7 +132,7 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
         <ErrorBox
           error={submission.error}
           onRetry={() => {
-            void submit()
+            void send(submission.draft)
           }}
         />
       )}

@@ -185,3 +185,13 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   Corrupt storage reads as empty; a failed write keeps the session's posts in memory.
 - **`useResource` gained `mutate`** so the list updates in place after a publish instead of refetching;
   a mutation while loading or after a failure is ignored, the next load merges from the store anyway.
+
+## Optimistic insert (2026-11-21, PR 18)
+
+- **The list owns the publish**: the form hands a draft to `PostList`, which inserts a `pending` post
+  at once, calls the use case, then swaps it for the stored post or removes it on failure. The form
+  stays presentational and gets a `Result` back.
+- **The fields clear on submit and come back on failure**, unless something new was typed meanwhile;
+  the publish button alone is disabled while a post is in flight, so a second post can be drafted.
+- **Pending ids start at `Number.MIN_SAFE_INTEGER`** so they can never meet a written (small negative)
+  or a remote (positive) id.

@@ -6,20 +6,23 @@ import { createContainer } from '../../../di/container'
 import { ContainerProvider } from '../../../di/ContainerProvider'
 import { LocaleProvider } from '../../../i18n/LocaleProvider'
 import { fakeFetch, json } from '../../../test/fake-fetch'
+import type { NewPost } from '../domain/model/new-post'
 import { NewPostForm } from './NewPostForm'
 
 const created = { id: 101, userId: 3, title: 'Hello', body: 'World' }
 
-const renderForm = (fetchFunction: FetchFunction, onCreated = vi.fn()) => {
+const renderForm = (fetchFunction: FetchFunction) => {
+  const container = createContainer({ fetchFunction })
+  const onSubmit = vi.fn((draft: NewPost) => container.createPost.execute(draft))
   render(
-    <ContainerProvider container={createContainer({ fetchFunction })}>
+    <ContainerProvider container={container}>
       <LocaleProvider initialLocale="en">
-        <NewPostForm userId={3} onCreated={onCreated} />
+        <NewPostForm userId={3} onSubmit={onSubmit} />
       </LocaleProvider>
     </ContainerProvider>,
   )
   return {
-    onCreated,
+    onSubmit,
     title: screen.getByLabelText('Title'),
     body: screen.getByLabelText('Body'),
     publish: screen.getByRole('button', { name: 'Publish' }),
@@ -48,32 +51,35 @@ describe('NewPostForm', () => {
     expect(body).not.toHaveAttribute('aria-invalid', 'true')
   })
 
-  it('sends one request on a double click and disables the form meanwhile', async () => {
+  it('sends one request on a double click, clears the fields at once and keeps them usable', async () => {
     const fetchFunction = fakeFetch(() => new Promise(() => undefined))
-    const { title, body, publish } = renderForm(fetchFunction)
+    const { onSubmit, title, body, publish } = renderForm(fetchFunction)
     await userEvent.type(title, 'Hello')
     await userEvent.type(body, 'World')
     await userEvent.dblClick(publish)
-    expect(fetchFunction).toHaveBeenCalledTimes(1)
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit).toHaveBeenCalledWith({ userId: 3, title: 'Hello', body: 'World' })
     expect(publish).toBeDisabled()
-    expect(title).toBeDisabled()
+    expect(title).toBeEnabled()
+    expect(title).toHaveValue('')
+    expect(body).toHaveValue('')
     expect(screen.getByRole('status')).toHaveTextContent('Publishing…')
   })
 
-  it('reports the created post, clears the draft and re-enables the form', async () => {
-    const { onCreated, title, body, publish } = renderForm(fakeFetch(() => json(created, 201)))
+  it('re-enables the publish button once the post is accepted', async () => {
+    const { onSubmit, title, body, publish } = renderForm(fakeFetch(() => json(created, 201)))
     await userEvent.type(title, '  Hello ')
     await userEvent.type(body, 'World')
     await userEvent.click(publish)
     expect(await screen.findByRole('button', { name: 'Publish' })).toBeEnabled()
-    expect(onCreated).toHaveBeenCalledWith({ id: -1, userId: 3, title: 'Hello', body: 'World', source: 'written' })
+    expect(onSubmit).toHaveBeenCalledWith({ userId: 3, title: '  Hello ', body: 'World' })
     expect(title).toHaveValue('')
-    expect(body).toHaveValue('')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
-  it('keeps the draft and shows the error with a retry when the server fails', async () => {
+  it('brings the draft back with the error and a retry when the server fails', async () => {
     let calls = 0
-    const { onCreated, title, body, publish } = renderForm(
+    const { onSubmit, title, body, publish } = renderForm(
       fakeFetch(() => {
         calls += 1
         return calls === 1 ? json({}, 500) : json(created, 201)
@@ -85,11 +91,31 @@ describe('NewPostForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('The server answered with an error (500).')
     expect(title).toHaveValue('Hello')
     expect(body).toHaveValue('World')
-    expect(onCreated).not.toHaveBeenCalled()
     await userEvent.click(screen.getByRole('button', { name: 'Retry' }))
     expect(await screen.findByRole('button', { name: 'Publish' })).toBeEnabled()
-    expect(onCreated).toHaveBeenCalledTimes(1)
+    expect(onSubmit).toHaveBeenCalledTimes(2)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(title).toHaveValue('')
+  })
+
+  it('leaves what was typed meanwhile untouched when the failure comes back', async () => {
+    let fail: (response: Response) => void = () => undefined
+    const { title, body, publish } = renderForm(
+      fakeFetch(
+        () =>
+          new Promise<Response>((resolve) => {
+            fail = resolve
+          }),
+      ),
+    )
+    await userEvent.type(title, 'Hello')
+    await userEvent.type(body, 'World')
+    await userEvent.click(publish)
+    await userEvent.type(title, 'Next one')
+    fail(json({}, 500))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(title).toHaveValue('Next one')
+    expect(body).toHaveValue('World')
   })
 })
 
