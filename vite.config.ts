@@ -13,7 +13,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**'],
       exclude: ['src/**/*.test.*', 'src/test/**', 'src/main.tsx', 'src/**/*.d.ts'],
-      reporter: ['text-summary', 'html', 'json-summary'],
+      reporter: ['text-summary', 'html', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
       thresholds: { lines: 95, statements: 95, branches: 90, functions: 95 },
     },
