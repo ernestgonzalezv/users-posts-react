@@ -19,13 +19,19 @@ export function PostList({ user }: PostListProps) {
   const t = useT()
   const { state, reload } = useUserPosts(user.id)
   const [written, setWritten] = useState<readonly Post[]>([])
-  const [toast, setToast] = useState<string | null>(null)
+  const [toast, setToast] = useState<{
+    readonly id: number
+    readonly message: string
+  } | null>(null)
   const fetched = state.status === 'success' ? state.data : state.status === 'empty' ? [] : null
   const posts = fetched === null ? null : [...written, ...fetched]
 
   const addWritten = (post: Post) => {
     setWritten((current) => [{ ...post, id: -(current.length + 1) }, ...current])
-    setToast(t('form.success'))
+    setToast((current) => ({
+      id: (current?.id ?? 0) + 1,
+      message: t('form.success'),
+    }))
   }
 
   return (
@@ -36,7 +42,9 @@ export function PostList({ user }: PostListProps) {
           <h3 id="posts-title" className={styles.title}>
             {t('posts.title')}
           </h3>
-          {posts !== null && posts.length > 0 && <span className={styles.count}>{t('posts.count', { count: posts.length })}</span>}
+          {posts !== null && posts.length > 0 && (
+            <span className={styles.count}>{t('posts.count', { count: posts.length })}</span>
+          )}
         </div>
         {state.status === 'loading' && <Spinner label={t('posts.loading')} />}
         {state.status === 'error' && <ErrorBox error={state.error} onRetry={reload} />}
@@ -64,7 +72,8 @@ export function PostList({ user }: PostListProps) {
       </section>
       {toast !== null && (
         <Toast
-          message={toast}
+          key={toast.id}
+          message={toast.message}
           onDone={() => {
             setToast(null)
           }}

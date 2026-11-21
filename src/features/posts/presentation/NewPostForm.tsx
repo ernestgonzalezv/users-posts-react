@@ -8,7 +8,7 @@ import { Spinner } from '../../../shared/ui/Spinner'
 import { BODY_MAX, TITLE_MAX } from '../domain/model/new-post'
 import type { Post } from '../domain/model/post'
 import type { DraftFaults, FieldFault } from '../domain/usecase/create-post'
-import { validateDraft } from '../domain/usecase/create-post'
+import { normalizeTitle, validateDraft } from '../domain/usecase/create-post'
 import styles from './NewPostForm.module.css'
 
 interface NewPostFormProps {
@@ -16,7 +16,8 @@ interface NewPostFormProps {
   readonly onCreated: (post: Post) => void
 }
 
-type Submission = { readonly status: 'idle' } | { readonly status: 'submitting' } | { readonly status: 'failed'; readonly error: AppError }
+type Submission =
+  { readonly status: 'idle' } | { readonly status: 'submitting' } | { readonly status: 'failed'; readonly error: AppError }
 
 export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
   const t = useT()
@@ -61,6 +62,8 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
     setSubmission({ status: 'failed', error: result.error })
   }
 
+  const titleLength = normalizeTitle(title).length
+  const bodyLength = body.trim().length
   const titleFault = faultText(faults.title, TITLE_MAX)
   const bodyFault = faultText(faults.body, BODY_MAX)
 
@@ -80,8 +83,8 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
       <div className={styles.field}>
         <div className={styles.labelRow}>
           <label htmlFor={`${id}-title`}>{t('form.title.label')}</label>
-          <span className={title.length > TITLE_MAX ? styles.counterOver : styles.counter}>
-            {t('form.counter', { count: title.length, max: TITLE_MAX })}
+          <span className={titleLength > TITLE_MAX ? styles.counterOver : styles.counter}>
+            {t('form.counter', { count: titleLength, max: TITLE_MAX })}
           </span>
         </div>
         <input
@@ -106,8 +109,8 @@ export function NewPostForm({ userId, onCreated }: NewPostFormProps) {
       <div className={styles.field}>
         <div className={styles.labelRow}>
           <label htmlFor={`${id}-body`}>{t('form.body.label')}</label>
-          <span className={body.length > BODY_MAX ? styles.counterOver : styles.counter}>
-            {t('form.counter', { count: body.length, max: BODY_MAX })}
+          <span className={bodyLength > BODY_MAX ? styles.counterOver : styles.counter}>
+            {t('form.counter', { count: bodyLength, max: BODY_MAX })}
           </span>
         </div>
         <textarea

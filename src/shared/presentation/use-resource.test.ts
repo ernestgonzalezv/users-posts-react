@@ -58,7 +58,10 @@ describe('useResource', () => {
     const request = deferred<string[]>()
     const { result } = renderHook(() => useResource(request.loader))
     await settleWith(request, failure(httpError(503)))
-    expect(result.current.state).toEqual({ status: 'error', error: { kind: 'http', status: 503 } })
+    expect(result.current.state).toEqual({
+      status: 'error',
+      error: { kind: 'http', status: 503 },
+    })
   })
 
   it('aborts the previous request and ignores its late answer when the loader changes', async () => {
@@ -71,7 +74,10 @@ describe('useResource', () => {
     await settleWith(first, success(['stale']))
     expect(result.current.state).toEqual({ status: 'loading' })
     await settleWith(second, success(['fresh']))
-    expect(result.current.state).toEqual({ status: 'success', data: ['fresh'] })
+    expect(result.current.state).toEqual({
+      status: 'success',
+      data: ['fresh'],
+    })
   })
 
   it('goes back to loading and calls the loader again on reload', async () => {

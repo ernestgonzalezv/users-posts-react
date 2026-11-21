@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
-import { useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
+import { DEBOUNCE_MS, useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
 import { Avatar } from '../../../shared/ui/Avatar'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
@@ -13,6 +13,8 @@ import { searchUsers } from '../domain/usecase/search-users'
 import styles from './UserList.module.css'
 import { useUsers } from './use-users'
 
+const isBlank = (value: string): boolean => value.trim() === ''
+
 interface UserListProps {
   readonly selectedId: number | null
   readonly onSelect: (user: User) => void
@@ -22,7 +24,7 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
   const t = useT()
   const { state, reload } = useUsers()
   const [query, setQuery] = useState('')
-  const settledQuery = useDebouncedValue(query)
+  const settledQuery = useDebouncedValue(query, DEBOUNCE_MS, isBlank)
   const loaded = state.status === 'success' ? state.data : null
   const matches = loaded === null ? null : searchUsers(loaded, settledQuery)
   const clearSearch = () => {
@@ -39,13 +41,21 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
           <span className={styles.count} aria-live="polite">
             {settledQuery.trim() === ''
               ? t('users.count', { count: loaded.length })
-              : t('users.count.filtered', { count: matches.length, total: loaded.length })}
+              : t('users.count.filtered', {
+                  count: matches.length,
+                  total: loaded.length,
+                })}
           </span>
         )}
       </div>
       {loaded !== null && (
         <div className={styles.search}>
-          <SearchField value={query} onChange={setQuery} label={t('users.search.label')} placeholder={t('users.search.placeholder')} />
+          <SearchField
+            value={query}
+            onChange={setQuery}
+            label={t('users.search.label')}
+            placeholder={t('users.search.placeholder')}
+          />
         </div>
       )}
       {state.status === 'loading' && (
@@ -58,7 +68,9 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
           <ErrorBox error={state.error} onRetry={reload} />
         </div>
       )}
-      {state.status === 'empty' && <EmptyState icon={<UsersIcon />} title={t('users.empty.title')} hint={t('users.empty.hint')} />}
+      {state.status === 'empty' && (
+        <EmptyState icon={<UsersIcon />} title={t('users.empty.title')} hint={t('users.empty.hint')} />
+      )}
       {matches !== null && matches.length === 0 && (
         <EmptyState
           icon={<SearchIcon />}
