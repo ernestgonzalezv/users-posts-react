@@ -55,6 +55,7 @@ Read the ADRs of your step before writing code:
 
 ```sh
 npm run dev          # http://localhost:5173
+npm run dev:slow     # API delayed 2 s (VITE_API_DELAY_MS, development only)
 npm run typecheck
 npm run lint
 npm run test         # vitest run

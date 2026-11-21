@@ -271,3 +271,12 @@ The README summarises this file.
   focused radio button, which is correct behaviour, so the test now expects it. The busy guard of the
   form cannot be reached from the keyboard because the submit button is disabled, so the test submits
   the form programmatically.
+
+## PR 26 — slow API in development
+
+- **Asked:** a local way to slow the API down to see the spinners.
+- **Accepted:** a `delayedFetch` wrapper in `core/` behind `VITE_API_DELAY_MS`, a `dev:slow` script, the
+  variable typed in `vite-env.d.ts`.
+- **Corrected:** the first draft passed the global `fetch` from `main.tsx`, which the `no-fetch-outside-core`
+  ratchet rejects, and used a triple-slash reference that the `no-comments` ratchet counts as a comment; the
+  default moved into `core/` and the reference was dropped since `tsconfig` already loads `vite/client`.
