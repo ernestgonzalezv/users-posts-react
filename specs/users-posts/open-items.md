@@ -258,3 +258,12 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **The delay honours the abort signal**: a user switched during the wait never fetches at all, which is
   also what keeps StrictMode's first, cancelled effect from reaching the network.
 - **Production never reads the variable** (`import.meta.env.DEV` guard), so the build has no delay path.
+
+## Failing first request in development (2026-11-21, PR 27)
+
+- **`npm run dev:flaky`** sets `VITE_API_FAIL_FIRST=1` with a one second delay: the first request to each
+  method and url rejects like a network failure, the second goes through, so every error box, every
+  Retry and the rollback of a published post can be watched by a human.
+- **It sits inside the delay wrapper** even with no delay, so the StrictMode effect that is aborted at
+  mount never counts as the first attempt.
+- **Production never reads either variable**; the build has no wrapper at all.

@@ -32,6 +32,7 @@ Node 20 or newer.
 npm ci
 npm run dev        # http://localhost:5173
 npm run dev:slow   # same, every API answer delayed two seconds to watch the loading states
+npm run dev:flaky  # one second delay and the first request to each resource fails, to watch the error states, Retry and the rollback
 ```
 
 | Command | What it does |

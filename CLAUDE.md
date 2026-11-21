@@ -56,6 +56,7 @@ Read the ADRs of your step before writing code:
 ```sh
 npm run dev          # http://localhost:5173
 npm run dev:slow     # API delayed 2 s (VITE_API_DELAY_MS, development only)
+npm run dev:flaky    # 1 s delay and the first request per resource fails (VITE_API_FAIL_FIRST=1)
 npm run typecheck
 npm run lint
 npm run test         # vitest run

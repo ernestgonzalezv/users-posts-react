@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:slow": "VITE_API_DELAY_MS=2000 vite",
+    "dev:flaky": "VITE_API_DELAY_MS=1000 VITE_API_FAIL_FIRST=1 vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
