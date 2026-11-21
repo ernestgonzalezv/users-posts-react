@@ -32,4 +32,5 @@ milliseconds without a DOM, which is where most of the suite lives.
 
 ## Enforced by
 
-`npm run test` in `scripts/verify.sh` and CI.
+`npm run test:coverage` in `scripts/verify.sh` and CI: the suite plus V8 coverage with thresholds (95 % lines,
+statements and functions, 90 % branches). A drop under a threshold fails the gate.

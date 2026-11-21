@@ -19,9 +19,44 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm run test
+      - run: npm run test:coverage
       - run: npm run build
       - run: scripts/ratchet/ratchet.sh check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 14
+
+  coverage-badge:
+    name: Coverage badge
+    if: github.event_name == 'push'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:coverage
+      - run: scripts/coverage-badge.sh
+      - name: Publish the badge to the badges branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/badges && cp coverage/badge.svg coverage/coverage-summary.json /tmp/badges/
+          git fetch origin badges || true
+          git checkout -B badges origin/badges 2>/dev/null || git checkout --orphan badges
+          git rm -rfq . 2>/dev/null || true
+          cp /tmp/badges/badge.svg "coverage-${GITHUB_REF_NAME}.svg"
+          cp /tmp/badges/coverage-summary.json "coverage-${GITHUB_REF_NAME}.json"
+          git add -A
+          git commit -qm "coverage badge for ${GITHUB_REF_NAME} (${GITHUB_SHA::7})" || exit 0
+          git push origin badges
 
   semantic-title:
     name: Semantic PR title
