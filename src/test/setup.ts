@@ -11,6 +11,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   window.history.replaceState(null, '', '/')
+  window.localStorage.clear()
   const first = consoleError?.mock.calls[0]
   consoleError?.mockRestore()
   consoleError = null

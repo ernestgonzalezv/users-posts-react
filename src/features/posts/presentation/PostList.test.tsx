@@ -87,8 +87,8 @@ describe('PostList', () => {
     }
     const headings = screen.getAllByRole('heading', { level: 4 })
     expect(headings).toHaveLength(4)
-    expect(headings[0]).toHaveTextContent('Fresh')
-    expect(headings[1]).toHaveTextContent('Fresh')
+    expect(headings[0]).toHaveTextContent('Second')
+    expect(headings[1]).toHaveTextContent('First')
     expect(screen.getAllByText('New')).toHaveLength(2)
     expect(screen.getByRole('status')).toHaveTextContent('Published. Your post is at the top of the list.')
   })
@@ -125,6 +125,26 @@ describe('PostList', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
     expect(await screen.findByText('1 posts')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 3, name: 'No posts yet' })).not.toBeInTheDocument()
+  })
+
+  it('keeps the written posts of a user after switching away and back', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    const { switchTo } = renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Kept')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    await screen.findByText('3 posts')
+    switchTo(user(4, 'Patricia Lebsack'))
+    await screen.findByRole('heading', { level: 3, name: 'No posts yet' })
+    switchTo(user(3, 'Clementine Bauch'))
+    expect(await screen.findByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Kept')
+    expect(screen.getByText('New')).toBeInTheDocument()
   })
 
   it('drops the answer of a previous user that lands after switching', async () => {

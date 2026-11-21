@@ -18,17 +18,15 @@ interface PostListProps {
 
 export function PostList({ user }: PostListProps) {
   const t = useT()
-  const { state, reload } = useUserPosts(user.id)
-  const [written, setWritten] = useState<readonly Post[]>([])
+  const { state, reload, mutate } = useUserPosts(user.id)
   const [toast, setToast] = useState<{
     readonly id: number
     readonly message: string
   } | null>(null)
-  const fetched = state.status === 'success' ? state.data : state.status === 'empty' ? [] : null
-  const posts = fetched === null ? null : [...written, ...fetched]
+  const posts = state.status === 'success' ? state.data : state.status === 'empty' ? [] : null
 
   const addWritten = (post: Post) => {
-    setWritten((current) => [{ ...post, id: -(current.length + 1) }, ...current])
+    mutate((current) => [post, ...current])
     setToast((current) => ({
       id: (current?.id ?? 0) + 1,
       message: t('form.success'),
@@ -57,7 +55,7 @@ export function PostList({ user }: PostListProps) {
             {posts.map((post, index) => (
               <li
                 key={post.id}
-                className={post.id < 0 ? `${styles.post} ${styles.fresh}` : styles.post}
+                className={post.source === 'written' ? `${styles.post} ${styles.fresh}` : styles.post}
                 style={{ '--i': index } as CSSProperties}
               >
                 <span className={styles.number} aria-hidden="true">
@@ -66,7 +64,7 @@ export function PostList({ user }: PostListProps) {
                 <article className={styles.article}>
                   <h4 className={styles.postTitle}>
                     {post.title}
-                    {post.id < 0 && <span className={styles.badge}>{t('post.new')}</span>}
+                    {post.source === 'written' && <span className={styles.badge}>{t('post.new')}</span>}
                   </h4>
                   <p className={styles.body}>{post.body}</p>
                 </article>

@@ -2,6 +2,7 @@ import { API_BASE_URL } from '../core/config'
 import type { FetchFunction } from '../core/http-client'
 import { HttpClient } from '../core/http-client'
 import { HttpPostRepository } from '../features/posts/data/repository/http-post-repository'
+import { LocalWrittenPostStore } from '../features/posts/data/store/local-written-post-store'
 import { CreatePost } from '../features/posts/domain/usecase/create-post'
 import { GetUserPosts } from '../features/posts/domain/usecase/get-user-posts'
 import { HttpUserRepository } from '../features/users/data/repository/http-user-repository'
@@ -26,6 +27,6 @@ export const createContainer = (config: ContainerConfig = {}): Container => {
     ...(config.timeoutMs === undefined ? {} : { timeoutMs: config.timeoutMs }),
   })
   const users = new HttpUserRepository(http)
-  const posts = new HttpPostRepository(http)
+  const posts = new HttpPostRepository(http, new LocalWrittenPostStore())
   return { getUsers: new GetUsers(users), getUserPosts: new GetUserPosts(posts), createPost: new CreatePost(posts) }
 }
