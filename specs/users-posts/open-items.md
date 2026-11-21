@@ -282,3 +282,10 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   validation, grapheme counters, pastes, persistence, failures of every kind, slow and late answers,
   timeouts, malformed bodies, duplicate ids, a thousand users, long unbroken strings at 320 px, themes,
   locales, keyboard) found nothing else.
+## Development wrappers removed (2026-11-21, PR 29)
+
+- **`delayedFetch`, `failFirstFetch`, `dev:slow` and `dev:flaky` are gone**: Ernesto did not ask for them
+  and does not want test scaffolding in the product; a recruiter sees the same states by throttling or
+  switching off the network in DevTools, which the README now says.
+- **The README opens the production build first** (`npm run build && npm run preview`); the dev server
+  is for working on it, with a note on why StrictMode shows every request twice.

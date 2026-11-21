@@ -30,10 +30,14 @@ Node 20 or newer.
 
 ```sh
 npm ci
-npm run dev        # http://localhost:5173
-npm run dev:slow   # same, every API answer delayed two seconds to watch the loading states
-npm run dev:flaky  # one second delay and the first request to each resource fails, to watch the error states, Retry and the rollback
+npm run build && npm run preview   # production build on http://localhost:4173
 ```
+
+To work on it, `npm run dev` serves it on `http://localhost:5173` with React StrictMode, which mounts
+every component twice on purpose: DevTools shows each request twice there, the first one cancelled.
+Use the production build to see the app as a user does. To watch the loading and error states, throttle
+or switch off the network in the DevTools Network tab: the spinners, the error boxes with Retry and the
+rollback of a failed post are all driven by the real request.
 
 | Command | What it does |
 |---|---|

@@ -299,3 +299,10 @@ The README summarises this file.
 - **Corrected:** most first "failures" were the probe's own (lists found by the wrong attribute, mocked
   responses without CORS headers, a Vite module matched by a URL filter, a locale left in storage);
   every one was checked against a screenshot before being called a defect.
+## PR 29 — development wrappers removed
+
+- **Asked:** take the slow and flaky modes out of the project, and tell people to open the production
+  build rather than the dev server.
+- **Accepted:** PRs #39 and #40 reverted by hand (the wrappers, their tests, the scripts, the typings,
+  the screenshots, the README and CLAUDE.md lines); the README leads with build and preview and explains
+  the StrictMode double request and the DevTools way to see the loading and error states.
