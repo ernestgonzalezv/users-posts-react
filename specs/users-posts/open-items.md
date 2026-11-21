@@ -250,3 +250,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   real four seconds; the app never passes it.
 - **The phone journey asks Playwright for reduced motion**, since smooth scrolling was still running
   between two measurements in CI.
+
+## Slow API in development (2026-11-21, PR 26)
+
+- **`npm run dev:slow`** sets `VITE_API_DELAY_MS=2000`; `main.tsx` wraps the global fetch in
+  `delayedFetch` only in development, so every loading state and spinner can be watched by a human.
+- **The delay honours the abort signal**: a user switched during the wait never fetches at all, which is
+  also what keeps StrictMode's first, cancelled effect from reaching the network.
+- **Production never reads the variable** (`import.meta.env.DEV` guard), so the build has no delay path.
