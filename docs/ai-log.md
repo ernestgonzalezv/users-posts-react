@@ -252,3 +252,11 @@ The README summarises this file.
 - **Corrected:** the first run found a real defect from PR 20: the `maxLength` cap at four times the
   limit truncated a hundred family emoji (eleven code units each); the cap is twenty times now. Two
   selectors picked the users list instead of the posts list and were scoped to the posts region.
+
+## PR 23 — e2e runner
+
+- **Found:** the end-to-end job went red on its first run: `ubuntu-latest` resolves to Ubuntu 26.04
+  and Playwright 1.58 refuses to install Chromium there. The merge gate on my side also let that
+  red job through, because its check relied on a `\b` word boundary that BSD grep does not know;
+  the gate now reads the status column.
+- **Corrected:** the job is pinned to `ubuntu-24.04`, which Playwright supports.
