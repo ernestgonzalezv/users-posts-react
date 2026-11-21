@@ -1,33 +1,39 @@
 import type { CSSProperties } from 'react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
+import { counted } from '../../../i18n/translate'
 import { DEBOUNCE_MS, useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
+import { usePaged } from '../../../shared/presentation/use-paged'
+import type { Resource } from '../../../shared/presentation/use-resource'
 import { Avatar } from '../../../shared/ui/Avatar'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
-import { ChevronRightIcon, CloseIcon, SearchIcon, UsersIcon } from '../../../shared/ui/icons'
+import { ChevronDownIcon, ChevronRightIcon, CloseIcon, SearchIcon, UsersIcon } from '../../../shared/ui/icons'
 import { SearchField } from '../../../shared/ui/SearchField'
 import { Spinner } from '../../../shared/ui/Spinner'
 import type { User } from '../domain/model/user'
 import { initialsOf } from '../domain/model/user'
 import { searchUsers } from '../domain/usecase/search-users'
 import styles from './UserList.module.css'
-import { useUsers } from './use-users'
 
 const isBlank = (value: string): boolean => value.trim() === ''
+const PAGE_SIZE = 50
+const NO_USERS: readonly User[] = []
 
 interface UserListProps {
+  readonly users: Resource<readonly User[]>
   readonly selectedId: number | null
   readonly onSelect: (user: User) => void
 }
 
-export function UserList({ selectedId, onSelect }: UserListProps) {
+export function UserList({ users, selectedId, onSelect }: UserListProps) {
   const t = useT()
-  const { state, reload } = useUsers()
+  const { state, reload } = users
   const [query, setQuery] = useState('')
   const settledQuery = useDebouncedValue(query, DEBOUNCE_MS, isBlank)
   const loaded = state.status === 'success' ? state.data : null
-  const matches = loaded === null ? null : searchUsers(loaded, settledQuery)
+  const matches = useMemo(() => (loaded === null ? null : searchUsers(loaded, settledQuery)), [loaded, settledQuery])
+  const page = usePaged(matches ?? NO_USERS, PAGE_SIZE)
   const clearSearch = () => {
     setQuery('')
   }
@@ -41,7 +47,7 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
         {loaded !== null && matches !== null && (
           <span className={styles.count} aria-live="polite">
             {settledQuery.trim() === ''
-              ? t('users.count', { count: loaded.length })
+              ? counted(t, 'users.count', loaded.length)
               : t('users.count.filtered', {
                   count: matches.length,
                   total: loaded.length,
@@ -87,7 +93,7 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
       )}
       {matches !== null && matches.length > 0 && (
         <ul className={styles.list}>
-          {matches.map((user, index) => (
+          {page.shown.map((user, index) => (
             <li key={user.id} style={{ '--i': index } as CSSProperties}>
               <button
                 type="button"
@@ -110,6 +116,14 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
             </li>
           ))}
         </ul>
+      )}
+      {page.hidden > 0 && (
+        <div className={styles.more}>
+          <button type="button" onClick={page.showMore}>
+            <ChevronDownIcon />
+            {t('action.showMore', { count: Math.min(page.hidden, PAGE_SIZE) })}
+          </button>
+        </div>
       )}
     </section>
   )

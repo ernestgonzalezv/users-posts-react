@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react'
-import type { Theme } from './theme'
+import type { Theme, ThemeChoice } from './theme'
 
 export interface ThemeContextValue {
   readonly theme: Theme
-  readonly setTheme: (theme: Theme) => void
+  readonly choice: ThemeChoice
+  readonly setChoice: (choice: ThemeChoice) => void
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)

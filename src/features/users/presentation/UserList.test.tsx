@@ -6,13 +6,19 @@ import { createContainer } from '../../../di/container'
 import { ContainerProvider } from '../../../di/ContainerProvider'
 import { LocaleProvider } from '../../../i18n/LocaleProvider'
 import { fakeFetch, json, users } from '../../../test/fake-fetch'
+import type { User } from '../domain/model/user'
+import { useUsers } from './use-users'
 import { UserList } from './UserList'
+
+function Harness({ selectedId, onSelect }: { readonly selectedId: number | null; readonly onSelect: (user: User) => void }) {
+  return <UserList users={useUsers()} selectedId={selectedId} onSelect={onSelect} />
+}
 
 const renderList = (fetchFunction: FetchFunction, onSelect = vi.fn(), selectedId: number | null = null) =>
   render(
     <ContainerProvider container={createContainer({ fetchFunction })}>
       <LocaleProvider initialLocale="en">
-        <UserList selectedId={selectedId} onSelect={onSelect} />
+        <Harness selectedId={selectedId} onSelect={onSelect} />
       </LocaleProvider>
     </ContainerProvider>,
   )
@@ -37,7 +43,11 @@ describe('UserList', () => {
 
   it('reports the chosen user and marks the selected row', async () => {
     const onSelect = vi.fn()
-    renderList(fakeFetch(() => json(users)), onSelect, 2)
+    renderList(
+      fakeFetch(() => json(users)),
+      onSelect,
+      2,
+    )
     const ervin = await screen.findByRole('button', { name: 'Show posts by Ervin Howell' })
     expect(ervin).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(screen.getByRole('button', { name: 'Show posts by Clementine Bauch' }))
@@ -76,13 +86,35 @@ describe('UserList', () => {
     render(
       <ContainerProvider container={createContainer({ fetchFunction: fakeFetch(() => json({}, 500)) })}>
         <LocaleProvider initialLocale="es">
-          <UserList selectedId={null} onSelect={vi.fn()} />
+          <Harness selectedId={null} onSelect={vi.fn()} />
         </LocaleProvider>
       </ContainerProvider>,
     )
     expect(screen.getByRole('status')).toHaveTextContent('Cargando usuarios…')
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor respondió con un error (500).')
     expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
+  })
+})
+
+describe('UserList paging', () => {
+  it('shows fifty users, then fifty more on demand, and resets on a search', async () => {
+    const many = Array.from({ length: 120 }, (_, index) => ({
+      id: index + 1,
+      name: `Person ${String(index + 1).padStart(3, '0')}`,
+      username: `user${String(index + 1)}`,
+      email: `p${String(index + 1)}@x.y`,
+    }))
+    renderList(fakeFetch(() => json(many)))
+    expect(await screen.findByText('120 users')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(50)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 50 more' }))
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(100)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 20 more' }))
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(120)
+    expect(screen.queryByRole('button', { name: /^Show \d+ more/ })).not.toBeInTheDocument()
+    await userEvent.type(screen.getByRole('searchbox'), 'Person 1')
+    expect(await screen.findByText('21 of 120')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(21)
   })
 })
 

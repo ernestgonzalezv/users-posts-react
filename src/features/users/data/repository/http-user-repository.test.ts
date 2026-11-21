@@ -4,8 +4,22 @@ import { HttpClient } from '../../../../core/http-client'
 import { HttpUserRepository } from './http-user-repository'
 
 const users = [
-  { id: 1, name: 'Leanne Graham', username: 'Bret', email: 'Sincere@april.biz', website: 'hildegard.org', company: { name: 'Romaguera-Crona' } },
-  { id: 2, name: 'Ervin Howell', username: 'Antonette', email: 'Shanna@melissa.tv', website: 'anastasia.net', company: { name: 'Deckow-Crist' } },
+  {
+    id: 1,
+    name: 'Leanne Graham',
+    username: 'Bret',
+    email: 'Sincere@april.biz',
+    website: 'hildegard.org',
+    company: { name: 'Romaguera-Crona' },
+  },
+  {
+    id: 2,
+    name: 'Ervin Howell',
+    username: 'Antonette',
+    email: 'Shanna@melissa.tv',
+    website: 'anastasia.net',
+    company: { name: 'Deckow-Crist' },
+  },
 ]
 
 const repositoryWith = (fetchFunction: FetchFunction) =>
@@ -17,6 +31,14 @@ describe('HttpUserRepository', () => {
     const result = await repositoryWith(fetchFunction).getAll()
     expect(fetchFunction.mock.calls[0]![0]).toBe('https://api.test/users')
     expect(result.ok && result.value.map((user) => user.company)).toEqual(['Romaguera-Crona', 'Deckow-Crist'])
+  })
+
+  it('keeps the first of two users that share an id', async () => {
+    const fetchFunction = vi
+      .fn<FetchFunction>()
+      .mockResolvedValue(new Response(JSON.stringify([users[0], { ...users[1], id: 1 }, users[1]])))
+    const result = await repositoryWith(fetchFunction).getAll()
+    expect(result.ok && result.value.map((user) => user.name)).toEqual(['Leanne Graham', 'Ervin Howell'])
   })
 
   it('returns a parse failure when the list has the wrong shape', async () => {

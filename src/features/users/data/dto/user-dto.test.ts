@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { isUserDto, isUserDtoList } from './user-dto'
 
-const valid = { id: 1, name: 'Leanne Graham', username: 'Bret', email: 'Sincere@april.biz', website: 'hildegard.org', company: { name: 'Romaguera-Crona' } }
+const valid = {
+  id: 1,
+  name: 'Leanne Graham',
+  username: 'Bret',
+  email: 'Sincere@april.biz',
+  website: 'hildegard.org',
+  company: { name: 'Romaguera-Crona' },
+}
 
 describe('isUserDto', () => {
   it('accepts the shape JSONPlaceholder returns, with extra fields', () => {
@@ -14,6 +21,9 @@ describe('isUserDto', () => {
 
   it('rejects a missing or mistyped required field', () => {
     expect(isUserDto({ ...valid, id: '1' })).toBe(false)
+    expect(isUserDto({ ...valid, id: 1.5 })).toBe(false)
+    expect(isUserDto({ ...valid, id: Number.NaN })).toBe(false)
+    expect(isUserDto({ ...valid, id: Number.MAX_SAFE_INTEGER + 2 })).toBe(false)
     expect(isUserDto({ ...valid, email: undefined })).toBe(false)
     expect(isUserDto(null)).toBe(false)
     expect(isUserDto('user')).toBe(false)

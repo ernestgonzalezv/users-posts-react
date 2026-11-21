@@ -16,16 +16,19 @@ interface SegmentedControlProps<T extends string> {
 
 export function SegmentedControl<T extends string>({ label, value, options, onChange }: SegmentedControlProps<T>) {
   const moveSelection = (event: KeyboardEvent<HTMLDivElement>) => {
-    const delta = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0
+    const delta =
+      event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0
     if (delta === 0) {
       return
     }
     event.preventDefault()
     const index = options.findIndex((option) => option.value === value)
-    const next = options[(index + delta + options.length) % options.length]
-    if (next !== undefined) {
-      onChange(next.value)
-    }
+    const target = (index + delta + options.length) % options.length
+    options.forEach((option, position) => {
+      if (position === target) {
+        onChange(option.value)
+      }
+    })
   }
 
   return (

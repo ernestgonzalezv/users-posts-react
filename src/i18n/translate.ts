@@ -4,9 +4,7 @@ import type { Locale } from './locale'
 export type MessageKey = keyof typeof en
 export type Dictionary = Record<MessageKey, string>
 
-type Placeholders<S extends string> = S extends `${string}{${infer Name}}${infer Rest}`
-  ? Name | Placeholders<Rest>
-  : never
+type Placeholders<S extends string> = S extends `${string}{${infer Name}}${infer Rest}` ? Name | Placeholders<Rest> : never
 
 export type MessageParams<K extends MessageKey> = Record<Placeholders<(typeof en)[K]>, string | number>
 
@@ -28,3 +26,8 @@ export const createTranslate =
   (dictionaries: Readonly<Record<Locale, Dictionary>>, locale: Locale): Translate =>
   (key, ...args) =>
     format(dictionaries[locale][key], args[0])
+
+export type CountKey = 'users.count' | 'posts.count'
+
+export const counted = (t: Translate, key: CountKey, count: number): string =>
+  count === 1 ? t(`${key}.one`, { count }) : t(key, { count })

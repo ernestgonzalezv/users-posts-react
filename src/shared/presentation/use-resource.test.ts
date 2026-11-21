@@ -105,6 +105,35 @@ describe('useResource', () => {
     expect(request.signals[0]?.aborted).toBe(true)
   })
 
+  it('mutates the loaded data in place and re-evaluates emptiness', async () => {
+    const request = deferred<string[]>()
+    const { result } = renderHook(() => useResource(request.loader))
+    await settleWith(request, success([]))
+    expect(result.current.state).toEqual({ status: 'empty' })
+    act(() => {
+      result.current.mutate((current) => [...current, 'a'])
+    })
+    expect(result.current.state).toEqual({ status: 'success', data: ['a'] })
+    act(() => {
+      result.current.mutate(() => [])
+    })
+    expect(result.current.state).toEqual({ status: 'empty' })
+  })
+
+  it('ignores a mutation while loading or after a failure', async () => {
+    const request = deferred<string[]>()
+    const { result } = renderHook(() => useResource(request.loader))
+    act(() => {
+      result.current.mutate(() => ['early'])
+    })
+    expect(result.current.state).toEqual({ status: 'loading' })
+    await settleWith(request, failure(httpError(500)))
+    act(() => {
+      result.current.mutate(() => ['late'])
+    })
+    expect(result.current.state.status).toBe('error')
+  })
+
   it('uses a custom emptiness check', async () => {
     const request = deferred<{ items: number[] }>()
     const { result } = renderHook(() => useResource(request.loader, (value) => value.items.length === 0))

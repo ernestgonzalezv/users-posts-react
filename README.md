@@ -2,11 +2,12 @@
 
 [![CI](https://github.com/ernestgonzalezv/users-posts-react/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ernestgonzalezv/users-posts-react/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ernestgonzalezv/users-posts-react/graph/badge.svg)](https://codecov.io/gh/ernestgonzalezv/users-posts-react)
-[![Tests](https://img.shields.io/badge/tests-141%20passing-2f7a47)](src)
+[![Tests](https://img.shields.io/badge/tests-227%20unit%20%2B%2010%20e2e-2f7a47)](src)
 
 A small React 19 + TypeScript app over the public [JSONPlaceholder](https://jsonplaceholder.typicode.com)
-API: search users by name, read the chosen user's posts, write a new one. English and Spanish, light and
-dark, every screen with its loading, empty and error states.
+API: search users by name, read the chosen user's posts, write a new one. English and Spanish, light,
+dark or the system theme, the chosen user in the URL, every screen with its loading, empty and error
+states.
 
 ![Users and posts, light](docs/screenshots/pr6-form-success.png)
 
@@ -34,8 +35,9 @@ npm run dev        # http://localhost:5173
 
 | Command | What it does |
 |---|---|
-| `npm run test` | the whole suite with Vitest (140 tests in 33 files) |
-| `npm run test:coverage` | the suite with V8 coverage; fails under 95 % lines/statements/functions or 90 % branches; HTML report in `coverage/` |
+| `npm run test` | the unit and component suite with Vitest (227 tests in 44 files) |
+| `npm run test:coverage` | the suite with V8 coverage; fails under 100 % on lines, statements, functions and branches; HTML report in `coverage/` |
+| `npm run test:e2e` | the Playwright journeys (10, Chromium desktop and a Pixel 7) over the production build; `npx playwright install chromium` once |
 | `npm run typecheck` | `tsc -b --noEmit`, strict with `exactOptionalPropertyTypes` |
 | `npm run lint` | ESLint with the type-aware rules |
 | `npm run build` | production build into `dist/` |
@@ -45,18 +47,27 @@ npm run dev        # http://localhost:5173
 
 - **Users** load into the sidebar with a spinner, an error box with Retry (network, timeout, HTTP status,
   malformed body) or an empty state. Each row is a toggle button; the chosen one is tinted and marked.
+  Fifty rows at a time, then a "Show N more" button.
+- **The chosen user lives in the URL** (`/users/3`): a refresh, a shared link and the back button keep
+  or restore the selection, and an address that names nobody gets its own screen with the way back.
 - **Search** filters by name or username after a 300 ms debounce, ignoring case and accents on both
   sides (`Érvin` finds `Ervin`). Zero matches is its own state with a "Clear search" action; the pill
   reads `0 of 10` so the total is never lost. Escape clears the box.
 - **Posts** of the chosen user load under a header with email, website and company, numbered, with their
-  own loading, empty and error states. Switching users aborts the previous request, so a late answer never
-  overwrites the current user.
+  own loading, empty and error states, twenty at a time. Switching users aborts the previous request, so a
+  late answer never overwrites the current user.
 - **New post**: title and body required after trimming, 100 and 1000 characters at most, per-field
-  messages, focus on the first faulty field, live counters. One request per submit (the form is disabled
-  meanwhile). On success the post lands at the top with a "New" badge and a toast; on failure the draft
-  stays and the error shows inline with Retry.
-- **Language** (EN/ES) and **theme** (light/dark) switches in the app bar; both persist in `localStorage`,
-  the theme is applied before the first paint, and both follow the browser when nothing is stored.
+  messages, focus on the first faulty field, live counters that count graphemes (one family emoji is one
+  character). One request per submit. The post lands at the top at once, marked "Sending"; on success it
+  becomes "New" with a toast, on failure it is rolled back, the draft is restored and the error shows
+  inline with Retry.
+- **Written posts are kept per user** in `localStorage`, so switching users or reloading does not drop
+  them; the API does not persist writes.
+- **Any input** survives: control and zero-width characters are stripped, blank lines collapse, blank
+  names fall back to the username, a repeated id is dropped, a 300-character email or a title made of
+  one word cannot widen the page, a thousand users stay usable.
+- **Language** (EN/ES) and **theme** (light, dark or system) switches in the app bar; both persist in
+  `localStorage`, the theme is applied before the first paint, and "system" follows the OS live.
 - **Phone**: the layout stacks and choosing a user scrolls to the detail; smooth scrolling is turned off
   under `prefers-reduced-motion`.
 
@@ -101,7 +112,13 @@ A few worth calling out:
   and `useResource` cancels the previous request.
 - **Validation lives in the domain** (`validateDraft`); the form translates fault codes and never blocks
   typing with `maxLength`.
-- **Two explicit themes**, no "system" entry in the switch: with nothing stored the app follows the OS.
+- **A "system" theme that follows the OS live** (`matchMedia` change event); the stored choice is one of
+  three, and the first paint reads it before React mounts.
+- **A router without a library**: one `/users/:id` route over `history` and `popstate`, parsed into a
+  union (`home`, `user`, `missing`), because one route does not justify a dependency.
+- **Optimistic insert with rollback**: the post shows at once as "Sending"; the failure path restores the
+  draft and removes the pending row.
+- **Client-side paging, not virtualisation**: enough for a thousand rows without a dependency.
 
 ## Testing
 
@@ -111,11 +128,15 @@ tested without a DOM; hooks with `renderHook`; components with `userEvent`; `src
 walks the cross-feature cases (language switch keeps the chosen user, the draft and the written posts;
 retry after a network failure; timeout; the chosen user hidden by the search).
 
+End to end: `e2e/` holds ten Playwright journeys over the production build (`vite preview`) with the API
+mocked at the network layer from fixtures, in Chromium on a desktop viewport and a Pixel 7 for the
+`@mobile` tag. They run as their own CI job and are not part of `scripts/verify.sh`.
+
 No network in tests: `src/test/fake-fetch.ts` routes a fake `fetch` by URL and method.
 
-**Coverage** (V8 through `@vitest/coverage-v8`): about 97 % lines, 95 % branches and 99 % functions over
-`src/` minus tests and the entry point. `scripts/verify.sh` runs the suite with coverage, so a drop under
-the thresholds fails locally and in CI. Every CI run uploads `coverage/lcov.info` to
+**Coverage** (V8 through `@vitest/coverage-v8`): 100 % lines, branches and functions over `src/` minus
+tests and the entry point, and the thresholds sit at 100 %, so `scripts/verify.sh` and CI fail on the first
+line or branch nobody exercises. Every CI run uploads `coverage/lcov.info` to
 [Codecov](https://codecov.io/gh/ernestgonzalezv/users-posts-react) through the GitHub App (OIDC, no token
 in the repository); Codecov draws the badge above and comments the delta on each pull request, with the
 project target set in `codecov.yml`. The HTML report is also uploaded as the `coverage-report` artifact
@@ -123,8 +144,8 @@ of each run.
 
 ## How it was built
 
-CI is GitHub Actions (`.github/workflows/ci.yml`): the same gate as `scripts/verify.sh`, the semantic
-title check on pull requests, and the coverage upload to Codecov.
+CI is GitHub Actions (`.github/workflows/ci.yml`): the same gate as `scripts/verify.sh`, the Playwright
+journeys on Ubuntu 24.04, the semantic title check on pull requests, and the coverage upload to Codecov.
 
 Gitflow: `main` ← `develop` ← one branch per behaviour (`feat/`, `test/`, `docs/`), merged through pull
 requests with CI (typecheck, lint, tests, build, semantic title). Each PR carries a manual test script
@@ -135,16 +156,27 @@ baseline can only shrink (no comments, no literal UI text outside `i18n`, no `fe
 `scripts/pr-gates.sh` checks the shape of a PR and a 500-production-line ceiling per PR. Two PRs were
 closed by that ceiling and split; the history shows it.
 
+## Next steps of 1.0.0 (done)
+
+Everything listed as a next step in 1.0.0 shipped in 1.2.0, one pull request each:
+
+- Written posts kept per user in a local store (#29).
+- Paging for long lists, fifty users and twenty posts at a time (#33).
+- Optimistic insert with rollback (#30).
+- A "system" option in the theme switch, following the OS live (#31).
+- End-to-end tests in a real browser with Playwright (#34, #35).
+- Router with the chosen user in the URL (#28).
+
+Along the way: any input is accepted and rendered safely (#32), and coverage sits at 100 % with the
+thresholds held there (#36).
+
 ## Next steps
 
-- Keep written posts per user in memory (or a local store) so switching users does not drop them; the
-  API does not persist writes.
-- Pagination or virtualisation if the lists grow; the ten users and ten posts per user do not need it.
-- An optimistic insert with rollback instead of inserting after the answer; today the toast waits for
-  the server.
-- A "system" option in the theme switch, and the OS preference followed live (`matchMedia` change event).
-- End-to-end tests in a real browser (Playwright) on top of the screenshot run used for the PRs.
-- Router with the chosen user in the URL so a refresh keeps the selection.
+- Edit and delete a written post; today a written post is only ever added.
+- A visual regression check on the Playwright screenshots, so a CSS change that moves something fails CI.
+- Virtualise the lists if they ever pass a few thousand rows; paging is enough below that.
+- Offline reading: cache the last users and posts with a service worker and show them when the API fails.
+- Sync the written posts across tabs with the `storage` event.
 
 ## AI usage
 

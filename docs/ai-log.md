@@ -187,3 +187,87 @@ The README summarises this file.
   the Codecov badge in the README, `codecov.yml` aligned with the local thresholds.
 - **Removed:** the badges branch job, `scripts/coverage-badge.sh`, `codemagic.yaml` and their
   README paragraphs; the generated `badges` branch is deleted after the merge.
+
+## PR 16 — router
+
+- **Asked:** the chosen user in the URL so a refresh keeps the selection (first of the 1.0.0 next steps).
+- **Accepted:** a hand-written route hook over the History API with a parsed route union, the missing
+  state for any address that names nobody, back and forward buttons honoured, tests for thirteen bad
+  addresses.
+- **Corrected:** nothing on the first run; the URL is reset between tests in the setup so one test
+  cannot leak its address into the next.
+
+## PR 17 — written posts kept
+
+- **Asked:** keep written posts per user so switching users or reloading does not drop them (the API
+  never persists writes).
+- **Accepted:** a local store behind a domain port, ids assigned below zero so they never collide with
+  the server's, the resource hook mutating in place, the post `source` union replacing the negative-id
+  check.
+- **Corrected:** two tests assumed the created post was the server's answer (always id 101, title
+  "Fresh"); the list now shows what the person typed, which is what they expect to see.
+
+## PR 18 — optimistic insert
+
+- **Asked:** show the post immediately and roll it back if the server refuses it.
+- **Accepted:** a third post source, `pending`, with a dimmed row and a "Sending…" badge; the draft
+  restored into the fields on failure; the retry resends the failed draft.
+- **Corrected:** the literal-text ratchet matched the `=> Promise<Result<Post>>` type in the form's
+  props as if it were markup; the `Publish` function type now lives in the use case file, where the
+  rule does not look.
+
+## PR 19 — system theme
+
+- **Asked:** a "system" option and the OS preference followed live.
+- **Accepted:** choice and theme split in the context, the media query as an external store, a third
+  segment with a monitor icon.
+- **Corrected:** the first subscription assumed every `MediaQueryList` has `addEventListener`; three
+  App tests stub `matchMedia` with a bare `{ matches }` and broke, so the subscription checks for the
+  method and the provider has a test for that shape.
+
+## PR 20 — any input
+
+- **Asked:** make the app hold up under any input, from the keyboard or from the API.
+- **Accepted:** grapheme-aware lengths, control-character stripping, safe-integer ids, duplicate ids
+  dropped, blank names named, plural forms, a hard cap on the inputs, the chip width, the debounce
+  hook's missing dependency through `useEffectEvent`.
+- **Corrected:** the first title normaliser deleted tabs before collapsing whitespace, gluing words
+  together ("ABcD"); it now keeps them as whitespace. A shell heredoc turned `\u200B` into the real
+  zero-width character inside the regex, caught by `no-irregular-whitespace`.
+
+## PR 21 — paged lists
+
+- **Asked:** pagination or virtualisation for large lists (the last of the 1.0.0 next steps).
+- **Accepted:** a small paging hook and a button at the foot of each list; page sizes as constants in
+  the components.
+- **Corrected:** the first version reset to the first page on every click, because the filtered users
+  array was rebuilt on each render; memoising the matches fixed it and the hook test was tightened to
+  use one stable array.
+
+## PR 22 — end to end
+
+- **Asked:** Playwright tests in a real browser on top of the screenshot run.
+- **Accepted:** ten journeys over the production build with the API mocked at the network layer, a
+  mobile project, traces on failure, the report uploaded by CI when something fails.
+- **Corrected:** the first run found a real defect from PR 20: the `maxLength` cap at four times the
+  limit truncated a hundred family emoji (eleven code units each); the cap is twenty times now. Two
+  selectors picked the users list instead of the posts list and were scoped to the posts region.
+
+## PR 23 — e2e runner
+
+- **Found:** the end-to-end job went red on its first run: `ubuntu-latest` resolves to Ubuntu 26.04
+  and Playwright 1.58 refuses to install Chromium there. The merge gate on my side also let that
+  red job through, because its check relied on a `\b` word boundary that BSD grep does not know;
+  the gate now reads the status column.
+- **Corrected:** the job is pinned to `ubuntu-24.04`, which Playwright supports.
+
+## PR 24 — full coverage
+
+- **Asked:** push coverage as far as it goes.
+- **Accepted:** thirteen tests for the uncovered lines and branches, two small refactors where the
+  uncovered branch was unreachable, thresholds raised to 100 % on every metric so they cannot drift back.
+- **Corrected:** a first server-snapshot assertion compared against React's text separators and was
+  rewritten over a single template string; a keyboard test forbade the click that Enter fires on a
+  focused radio button, which is correct behaviour, so the test now expects it. The busy guard of the
+  form cannot be reached from the keyboard because the submit button is disabled, so the test submits
+  the form programmatically.

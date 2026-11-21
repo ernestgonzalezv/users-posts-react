@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitForElementToBeRemoved, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import type { FetchFunction } from '../../../core/http-client'
@@ -87,8 +87,8 @@ describe('PostList', () => {
     }
     const headings = screen.getAllByRole('heading', { level: 4 })
     expect(headings).toHaveLength(4)
-    expect(headings[0]).toHaveTextContent('Fresh')
-    expect(headings[1]).toHaveTextContent('Fresh')
+    expect(headings[0]).toHaveTextContent('Second')
+    expect(headings[1]).toHaveTextContent('First')
     expect(screen.getAllByText('New')).toHaveLength(2)
     expect(screen.getByRole('status')).toHaveTextContent('Published. Your post is at the top of the list.')
   })
@@ -114,6 +114,29 @@ describe('PostList', () => {
     expect(second).not.toBe(first)
   })
 
+  it('lets the toast go away after its time', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    const container = createContainer({ fetchFunction })
+    render(
+      <ContainerProvider container={container}>
+        <LocaleProvider initialLocale="en">
+          <PostList user={user(3, 'Clementine Bauch')} toastMs={30} />
+        </LocaleProvider>
+      </ContainerProvider>,
+    )
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Brief')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    const toast = await screen.findByRole('status')
+    await waitForElementToBeRemoved(toast)
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
   it('turns the empty state into a list when the first post is written', async () => {
     const fetchFunction = fakeFetch((_url, init) =>
       init?.method === 'POST' ? json({ id: 101, userId: 3, title: 'Only one', body: 'So far' }, 201) : json([]),
@@ -123,8 +146,86 @@ describe('PostList', () => {
     await userEvent.type(screen.getByLabelText('Title'), 'Only one')
     await userEvent.type(screen.getByLabelText('Body'), 'So far')
     await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
-    expect(await screen.findByText('1 posts')).toBeInTheDocument()
+    expect(await screen.findByText('1 post')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 3, name: 'No posts yet' })).not.toBeInTheDocument()
+  })
+
+  it('keeps the written posts of a user after switching away and back', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    const { switchTo } = renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Kept')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    await screen.findByText('3 posts')
+    switchTo(user(4, 'Patricia Lebsack'))
+    await screen.findByRole('heading', { level: 3, name: 'No posts yet' })
+    switchTo(user(3, 'Clementine Bauch'))
+    expect(await screen.findByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Kept')
+    expect(screen.getByText('New')).toBeInTheDocument()
+  })
+
+  it('shows the post at once as sending, then marks it new when the server accepts it', async () => {
+    let accept: (response: Response) => void = () => undefined
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? new Promise<Response>((resolve) => {
+            accept = resolve
+          })
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Eager')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(screen.getByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Eager')
+    expect(screen.getByText('Sending…')).toBeInTheDocument()
+    expect(screen.queryByText('New')).not.toBeInTheDocument()
+    accept(json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201))
+    expect(await screen.findByText('New')).toBeInTheDocument()
+    expect(screen.queryByText('Sending…')).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('Published.')
+    expect(screen.getByText('3 posts')).toBeInTheDocument()
+  })
+
+  it('takes the post back out of the list when the server refuses it', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST' ? json({}, 503) : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Doomed')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('error (503)')
+    expect(screen.getByText('2 posts')).toBeInTheDocument()
+    expect(screen.queryByText('Doomed')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Title')).toHaveValue('Doomed')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  it('shows twenty posts and the rest on demand', async () => {
+    const many = Array.from({ length: 45 }, (_, index) => ({
+      id: index + 1,
+      userId: 3,
+      title: `Post ${String(index + 1)}`,
+      body: 'b',
+    }))
+    renderPosts(fakeFetch(() => json(many)))
+    expect(await screen.findByText('45 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(20)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 20 more' }))
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(40)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 5 more' }))
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(45)
+    expect(screen.queryByRole('button', { name: /more$/ })).not.toBeInTheDocument()
   })
 
   it('drops the answer of a previous user that lands after switching', async () => {
@@ -135,10 +236,10 @@ describe('PostList', () => {
     const fetchFunction = fakeFetch((url) => (url.endsWith('userId=3') ? first : json([posts[1]!])))
     const { switchTo } = renderPosts(fetchFunction)
     switchTo(user(4, 'Patricia Lebsack'))
-    expect(await screen.findByText('1 posts')).toBeInTheDocument()
+    expect(await screen.findByText('1 post')).toBeInTheDocument()
     releaseFirst(json(posts))
     await new Promise((resolve) => setTimeout(resolve, 20))
-    expect(screen.getByText('1 posts')).toBeInTheDocument()
+    expect(screen.getByText('1 post')).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(1)
   })
 })

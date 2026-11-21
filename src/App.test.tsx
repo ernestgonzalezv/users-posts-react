@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from './App'
@@ -44,6 +44,67 @@ describe('App', () => {
     expect(within(main).queryByRole('heading', { level: 2, name: 'Leanne Graham' })).not.toBeInTheDocument()
     expect(within(main).getByRole('heading', { level: 2, name: 'Ervin Howell' })).toBeInTheDocument()
     expect(within(main).getAllByRole('form')).toHaveLength(1)
+  })
+
+  it('opens the user named in the address and writes the chosen one back to it', async () => {
+    window.history.replaceState(null, '', '/users/2')
+    render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+    const main = screen.getByRole('main')
+    expect(within(main).getByRole('status')).toHaveTextContent('Loading users…')
+    expect(await within(main).findByRole('heading', { level: 2, name: 'Ervin Howell' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show posts by Ervin Howell' })).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(screen.getByRole('button', { name: 'Show posts by Leanne Graham' }))
+    expect(window.location.pathname).toBe('/users/1')
+    expect(within(main).getByRole('heading', { level: 2, name: 'Leanne Graham' })).toBeInTheDocument()
+  })
+
+  it.each(['/users/999', '/users/abc', '/somewhere'])(
+    'explains that %s points to nobody and offers the way back',
+    async (path) => {
+      window.history.replaceState(null, '', path)
+      render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+      const main = screen.getByRole('main')
+      expect(await within(main).findByRole('heading', { level: 3, name: 'That user is not here' })).toBeInTheDocument()
+      await userEvent.click(within(main).getByRole('button', { name: 'Back to the list' }))
+      expect(window.location.pathname).toBe('/')
+      expect(main).toHaveTextContent('Pick a user')
+    },
+  )
+
+  it('follows the back button to the previous user', async () => {
+    render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Show posts by Ervin Howell' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Show posts by Leanne Graham' }))
+    const main = screen.getByRole('main')
+    act(() => {
+      window.history.replaceState(null, '', '/users/2')
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+    expect(within(main).getByRole('heading', { level: 2, name: 'Ervin Howell' })).toBeInTheDocument()
+    expect(within(main).getAllByRole('heading', { level: 2 })).toHaveLength(1)
+  })
+
+  it('keeps the idle state when the directory fails and the address names a user', async () => {
+    window.history.replaceState(null, '', '/users/2')
+    render(<App container={createContainer({ fetchFunction: fakeFetch(() => json({}, 500)) })} />)
+    expect(await screen.findByRole('alert')).toHaveTextContent('error (500)')
+    expect(screen.getByRole('main')).toHaveTextContent('Pick a user')
+  })
+
+  it('keeps a written post after a reload', async () => {
+    const route = (url: string, init: RequestInit | undefined) =>
+      init?.method === 'POST' ? json({ id: 101, userId: 1, title: 'x', body: 'y' }, 201) : byRoute(url)
+    const first = render(<App container={createContainer({ fetchFunction: fakeFetch(route) })} />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Show posts by Leanne Graham' }))
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Survives')
+    await userEvent.type(screen.getByLabelText('Body'), 'a reload')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    await screen.findByText('3 posts')
+    first.unmount()
+    render(<App container={createContainer({ fetchFunction: fakeFetch(route) })} />)
+    expect(await screen.findByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Survives')
   })
 
   it('scrolls the detail into view on a stacked layout', async () => {

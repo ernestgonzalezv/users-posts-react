@@ -166,3 +166,87 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   the badge script and `codemagic.yaml` are gone.
 - **`codecov.yml`**: project status at 95 % with 1 % tolerance, patch status informational at 90 %, a
   condensed comment only when coverage changes.
+
+## Router (2026-11-21, PR 16)
+
+- **The chosen user lives in the URL** (`/users/:id`) through the History API and `useSyncExternalStore`;
+  no routing library, since there is one route and the app must stay small.
+- **The address is parsed into a union** (`home`, `user`, `unknown`): a missing, non-numeric, zero or
+  oversized id and any other path land on a "not here" state with a way back that replaces the entry.
+- **The users resource moved up to the App**, which resolves the id against the directory; the list is
+  presentational now.
+
+## Written posts kept (2026-11-21, PR 17)
+
+- **A post gets a `source`** (`remote` or `written`) instead of a negative-id convention; the badge and
+  the tint read the source.
+- **Written posts live in local storage per user** behind a domain port (`WrittenPostStore`); the
+  repository lists them before the remote ones and stores a post only after the server accepted it.
+  Corrupt storage reads as empty; a failed write keeps the session's posts in memory.
+- **`useResource` gained `mutate`** so the list updates in place after a publish instead of refetching;
+  a mutation while loading or after a failure is ignored, the next load merges from the store anyway.
+
+## Optimistic insert (2026-11-21, PR 18)
+
+- **The list owns the publish**: the form hands a draft to `PostList`, which inserts a `pending` post
+  at once, calls the use case, then swaps it for the stored post or removes it on failure. The form
+  stays presentational and gets a `Result` back.
+- **The fields clear on submit and come back on failure**, unless something new was typed meanwhile;
+  the publish button alone is disabled while a post is in flight, so a second post can be drafted.
+- **Pending ids start at `Number.MIN_SAFE_INTEGER`** so they can never meet a written (small negative)
+  or a remote (positive) id.
+
+## System theme (2026-11-21, PR 19)
+
+- **The stored value is a choice** (`light`, `dark`, `system`), the applied theme is derived from the
+  choice and `prefers-color-scheme`, read through `useSyncExternalStore` so an OS change re-renders.
+- **Anything unknown in storage reads as `system`**; a media query list without `addEventListener`
+  (old engines, test doubles) is honoured once and simply not followed live.
+- **The paint-before-React script in `index.html` already did the right thing**: any value other than
+  light or dark falls back to the media query.
+
+## Any input (2026-11-21, PR 20)
+
+- **Lengths are graphemes** (`Intl.Segmenter`, with a code-point fallback): a flag or a family emoji
+  counts once in the counters and in the validation. The inputs carry `maxLength` at twenty times the
+  limit as a hard cap against pathological pastes (a family emoji is eleven code units); the red counter still does the explaining.
+- **Control and zero-width characters are stripped** from drafts and from server text; the body keeps
+  `\n` and `\t`, normalises CRLF and collapses runs of blank lines to one.
+- **Ids must be safe integers** at the DTO guard; repositories drop a repeated id (React keys stay
+  unique); the route accepts any safe integer, so a server id of 0 or below is still reachable.
+- **Blank names fall back** to the username, then to `#id`; initials fall back to the first grapheme.
+- **Counts pluralise** (`1 post`, `1 user`) through `counted(t, key, n)` with a `.one` key per language.
+- **Chips cap at the header width**, so a 300-character email cannot widen the page.
+
+## Paged lists (2026-11-21, PR 21)
+
+- **Client-side paging, not virtualisation**: fifty users and twenty posts at a time with a "Show N
+  more" button; the ten-and-ten of JSONPlaceholder never show it, a thousand-item answer stays usable.
+- **`usePaged` resets to the first page when the items change** (a new search, a new user); the search
+  matches are memoised so a re-render alone does not reset it.
+
+## End to end (2026-11-21, PR 22)
+
+- **Playwright over the production build** (`vite preview`), Chromium only, a desktop project and a
+  Pixel 7 project for the tests tagged `@mobile`.
+- **The API is mocked at the network layer** (`page.route`) from fixtures in `e2e/api.ts`, so the run
+  is deterministic and needs no internet; failure, delay and volume are options of the mock.
+- **Ten journeys**: pick, address, reload, back; search and clear; missing address; directory failure
+  and retry; language and theme with the OS switch; stacked layout; optimistic publish kept per user
+  and across a reload; rollback and retry; validation; posts failure, retry and paging.
+- **Not part of `verify.sh`**: the e2e run needs a browser download, so it is its own CI job and
+  `npm run test:e2e` locally.
+
+## Full coverage (2026-11-21, PR 24)
+
+- **Thresholds at 100 %** for lines, statements, functions and branches: every remaining gap was either a
+  defensive branch worth a test (storage that throws, no `Intl.Segmenter`, hooks outside their provider,
+  the server snapshots, the busy guard of the form, every arrow of the segmented control) or dead code.
+- **Dead code removed instead of covered**: the `?? hue` fallback of the avatar (an index modulo the
+  length is always inside the array) and the `undefined` check after the segmented-control arithmetic.
+- **The user route accepts up to seventeen digits**, so a number past `Number.MAX_SAFE_INTEGER`
+  reaches the safe-integer check instead of being rejected by the regex alone.
+- **`PostList` takes an optional `toastMs`** so a test can watch the toast leave without waiting the
+  real four seconds; the app never passes it.
+- **The phone journey asks Playwright for reduced motion**, since smooth scrolling was still running
+  between two measurements in CI.

@@ -1,4 +1,5 @@
 import { validationError } from '../../../../core/app-error'
+import { stripControls, textLength } from '../../../../core/text'
 import type { Result } from '../../../../core/result'
 import { failure } from '../../../../core/result'
 import type { NewPost } from '../model/new-post'
@@ -9,16 +10,23 @@ import type { PostRepository } from '../repository/post-repository'
 export type FieldName = 'title' | 'body'
 export type FieldFault = 'required' | 'too-long'
 export type DraftFaults = Partial<Readonly<Record<FieldName, FieldFault>>>
+export type Publish = (draft: NewPost) => Promise<Result<Post>>
 
 const faultOf = (value: string, max: number): FieldFault | null =>
-  value === '' ? 'required' : value.length > max ? 'too-long' : null
+  value === '' ? 'required' : textLength(value) > max ? 'too-long' : null
 
-export const normalizeTitle = (title: string): string => title.trim().replace(/\s+/g, ' ')
+export const normalizeTitle = (title: string): string => stripControls(title, true).trim().replace(/\s+/g, ' ')
+
+export const normalizeBody = (body: string): string =>
+  stripControls(body, true)
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 
 export const normalizeDraft = (draft: NewPost): NewPost => ({
   userId: draft.userId,
   title: normalizeTitle(draft.title),
-  body: draft.body.trim(),
+  body: normalizeBody(draft.body),
 })
 
 export const validateDraft = (draft: NewPost): DraftFaults => {

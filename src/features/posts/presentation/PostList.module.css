@@ -99,6 +99,24 @@
     settle 1.6s var(--ease) 200ms both;
 }
 
+.pending {
+  animation: fade-up var(--dur) var(--ease) both;
+  opacity: 0.6;
+}
+
+.sending {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 1px var(--space-2);
+  border-radius: 999px;
+  background: var(--sel);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
 .badge {
   animation: pop var(--dur-slow) var(--ease-pop) 120ms both;
   display: inline-block;
@@ -145,4 +163,10 @@
   to {
     background-color: transparent;
   }
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0 var(--space-2);
 }
