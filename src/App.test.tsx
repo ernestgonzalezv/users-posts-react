@@ -58,18 +58,24 @@ describe('App', () => {
     expect(within(main).getByRole('heading', { level: 2, name: 'Leanne Graham' })).toBeInTheDocument()
   })
 
-  it.each(['/users/999', '/users/abc', '/somewhere'])(
-    'explains that %s points to nobody and offers the way back',
-    async (path) => {
-      window.history.replaceState(null, '', path)
-      render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
-      const main = screen.getByRole('main')
-      expect(await within(main).findByRole('heading', { level: 3, name: 'That user is not here' })).toBeInTheDocument()
-      await userEvent.click(within(main).getByRole('button', { name: 'Back to the list' }))
-      expect(window.location.pathname).toBe('/')
-      expect(main).toHaveTextContent('Pick a user')
-    },
-  )
+  it.each(['/somewhere', '/users', '/USERS/1'])('treats %s as the home', async (path) => {
+    window.history.replaceState(null, '', path)
+    render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+    const main = screen.getByRole('main')
+    expect(await screen.findByRole('button', { name: 'Show posts by Ervin Howell' })).toBeInTheDocument()
+    expect(main).toHaveTextContent('Pick a user')
+    expect(within(main).queryByRole('heading', { level: 3, name: 'That user is not here' })).not.toBeInTheDocument()
+  })
+
+  it.each(['/users/999', '/users/abc'])('explains that %s points to nobody and offers the way back', async (path) => {
+    window.history.replaceState(null, '', path)
+    render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+    const main = screen.getByRole('main')
+    expect(await within(main).findByRole('heading', { level: 3, name: 'That user is not here' })).toBeInTheDocument()
+    await userEvent.click(within(main).getByRole('button', { name: 'Back to the list' }))
+    expect(window.location.pathname).toBe('/')
+    expect(main).toHaveTextContent('Pick a user')
+  })
 
   it('follows the back button to the previous user', async () => {
     render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)

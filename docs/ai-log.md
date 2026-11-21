@@ -289,3 +289,13 @@ The README summarises this file.
   back with the draft kept, Retry publishes.
 - **Corrected:** the first draft bound the global `fetch` from `main.tsx`, which the ratchet forbids; the
   default lives in `core/` like the delay wrapper's.
+
+## PR 28 — edge cases from a browser sweep
+
+- **Asked:** run the app locally and try every edge case.
+- **Accepted:** three fixes out of a sweep of about a hundred cases: unknown paths go home, a
+  synchronous in-flight guard on the form, focus following the arrows in the segmented control. Each
+  one has a unit test that failed before the fix.
+- **Corrected:** most first "failures" were the probe's own (lists found by the wrong attribute, mocked
+  responses without CORS headers, a Vite module matched by a URL filter, a locale left in storage);
+  every one was checked against a screenshot before being called a defect.

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import type { FetchFunction } from '../../../core/http-client'
@@ -137,6 +137,19 @@ describe('NewPostForm edge cases', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(screen.getByRole('form')).toHaveAttribute('aria-busy', 'true')
     fireEvent.submit(screen.getByRole('form'))
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores submits fired in the same tick, before React has rendered the busy state', async () => {
+    const { onSubmit, title, body } = renderForm(fakeFetch(() => new Promise(() => undefined)))
+    await userEvent.type(title, 'Once')
+    await userEvent.type(body, 'Body')
+    const form = screen.getByRole('form')
+    act(() => {
+      fireEvent.submit(form)
+      fireEvent.submit(form)
+      fireEvent.submit(form)
+    })
     expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 
