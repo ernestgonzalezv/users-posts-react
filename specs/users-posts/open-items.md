@@ -208,8 +208,8 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 ## Any input (2026-11-21, PR 20)
 
 - **Lengths are graphemes** (`Intl.Segmenter`, with a code-point fallback): a flag or a family emoji
-  counts once in the counters and in the validation. The inputs carry `maxLength` at four times the
-  limit as a hard cap against pathological pastes; the red counter still does the explaining.
+  counts once in the counters and in the validation. The inputs carry `maxLength` at twenty times the
+  limit as a hard cap against pathological pastes (a family emoji is eleven code units); the red counter still does the explaining.
 - **Control and zero-width characters are stripped** from drafts and from server text; the body keeps
   `\n` and `\t`, normalises CRLF and collapses runs of blank lines to one.
 - **Ids must be safe integers** at the DTO guard; repositories drop a repeated id (React keys stay
@@ -224,3 +224,15 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   more" button; the ten-and-ten of JSONPlaceholder never show it, a thousand-item answer stays usable.
 - **`usePaged` resets to the first page when the items change** (a new search, a new user); the search
   matches are memoised so a re-render alone does not reset it.
+
+## End to end (2026-11-21, PR 22)
+
+- **Playwright over the production build** (`vite preview`), Chromium only, a desktop project and a
+  Pixel 7 project for the tests tagged `@mobile`.
+- **The API is mocked at the network layer** (`page.route`) from fixtures in `e2e/api.ts`, so the run
+  is deterministic and needs no internet; failure, delay and volume are options of the mock.
+- **Ten journeys**: pick, address, reload, back; search and clear; missing address; directory failure
+  and retry; language and theme with the OS switch; stacked layout; optimistic publish kept per user
+  and across a reload; rollback and retry; validation; posts failure, retry and paging.
+- **Not part of `verify.sh`**: the e2e run needs a browser download, so it is its own CI job and
+  `npm run test:e2e` locally.

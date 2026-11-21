@@ -243,3 +243,12 @@ The README summarises this file.
 - **Corrected:** the first version reset to the first page on every click, because the filtered users
   array was rebuilt on each render; memoising the matches fixed it and the hook test was tightened to
   use one stable array.
+
+## PR 22 — end to end
+
+- **Asked:** Playwright tests in a real browser on top of the screenshot run.
+- **Accepted:** ten journeys over the production build with the API mocked at the network layer, a
+  mobile project, traces on failure, the report uploaded by CI when something fails.
+- **Corrected:** the first run found a real defect from PR 20: the `maxLength` cap at four times the
+  limit truncated a hundred family emoji (eleven code units each); the cap is twenty times now. Two
+  selectors picked the users list instead of the posts list and were scoped to the posts region.
