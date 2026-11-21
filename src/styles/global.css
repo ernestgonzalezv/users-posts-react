@@ -18,6 +18,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
+  transition:
+    background-color var(--dur-slow) var(--ease),
+    color var(--dur-slow) var(--ease);
   font-family: var(--font-body);
   font-size: var(--text-md);
   line-height: 1.5;

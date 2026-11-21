@@ -128,3 +128,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **Each publish is a new toast** (`key` on a counter), so the four seconds restart.
 - **Any unbroken string wraps** (`overflow-wrap: anywhere`) in titles, bodies and names.
 - **Clearing the search is immediate**; typing still waits 300 ms.
+
+## Motion (2026-11-20, PR 11)
+
+- **CSS only, no animation library**: durations and easings are tokens; `prefers-reduced-motion`
+  collapses every animation and transition through one global rule.
+- **Keyframes are declared in the module that uses them** because CSS Modules localises animation
+  names; a global `@keyframes` is unreachable from a module.
+- **Entrances are staggered with `--i`** set inline per row (28 ms for users, 35 ms for posts).

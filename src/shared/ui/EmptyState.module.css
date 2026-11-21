@@ -1,4 +1,5 @@
 .empty {
+  animation: fade-up var(--dur) var(--ease) both;
   display: grid;
   justify-items: start;
   gap: var(--space-2);
@@ -7,6 +8,7 @@
 }
 
 .icon {
+  animation: pop var(--dur-slow) var(--ease-pop) both;
   display: grid;
   place-items: center;
   width: 40px;
@@ -53,4 +55,28 @@
 .action > button:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }

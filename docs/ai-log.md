@@ -143,3 +143,12 @@ The README summarises this file.
   with double quotes and semicolons, three of them already merged; `.prettierrc` now carries the
   repo style and those files are restored. A toast test on fake timers hung again; it asserts the
   remount by node identity instead.
+
+## PR 11 — motion
+
+- **Asked:** animations on every state change, tasteful, with reduced motion honoured.
+- **Accepted:** CSS-only motion driven by tokens, staggered entrances through a `--i` custom property,
+  the fresh-post tint, the toast exit timed from its duration.
+- **Corrected:** the first cut put the shared keyframes in `global.css`; CSS Modules hashes every
+  `animation-name` in a module, so none of them resolved and nothing moved. Found by measuring the
+  computed `animationName` in the browser, not by eye; each module now declares the keyframes it uses.

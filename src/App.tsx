@@ -51,7 +51,7 @@ function Workspace() {
           <EmptyState icon={<InboxIcon />} title={t('posts.idle.title')} hint={t('posts.idle.hint')} />
         ) : (
           <>
-            <UserHeader user={selected} />
+            <UserHeader key={selected.id} user={selected} />
             <PostList key={selected.id} user={selected} />
           </>
         )}

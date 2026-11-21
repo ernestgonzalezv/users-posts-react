@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useT } from '../../../i18n/locale-context'
 import { Avatar } from '../../../shared/ui/Avatar'
 import { BriefcaseIcon, LinkIcon, MailIcon } from '../../../shared/ui/icons'
@@ -17,18 +18,18 @@ export function UserHeader({ user }: UserHeaderProps) {
       <div>
         <h2 className={styles.name}>{user.name}</h2>
         <ul className={styles.chips}>
-          <li className={styles.chip}>
+          <li className={styles.chip} style={{ '--i': 0 } as CSSProperties}>
             <MailIcon />
             <span>{user.email}</span>
           </li>
           {user.website !== '' && (
-            <li className={styles.chip}>
+            <li className={styles.chip} style={{ '--i': 1 } as CSSProperties}>
               <LinkIcon />
               <span>{user.website}</span>
             </li>
           )}
           {user.company !== '' && (
-            <li className={styles.chip}>
+            <li className={styles.chip} style={{ '--i': 2 } as CSSProperties}>
               <BriefcaseIcon />
               <span>{t('user.company', { company: user.company })}</span>
             </li>

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
 import { DEBOUNCE_MS, useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
@@ -86,8 +87,8 @@ export function UserList({ selectedId, onSelect }: UserListProps) {
       )}
       {matches !== null && matches.length > 0 && (
         <ul className={styles.list}>
-          {matches.map((user) => (
-            <li key={user.id}>
+          {matches.map((user, index) => (
+            <li key={user.id} style={{ '--i': index } as CSSProperties}>
               <button
                 type="button"
                 className={styles.row}
