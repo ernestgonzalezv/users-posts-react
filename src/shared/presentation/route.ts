@@ -1,6 +1,6 @@
 export type Route = { readonly kind: 'home' } | { readonly kind: 'user'; readonly id: number } | { readonly kind: 'unknown' }
 
-const USER_PATH = /^\/users\/(-?\d{1,15})\/?$/
+const USER_PATH = /^\/users\/(-?\d{1,17})\/?$/
 
 export const parseRoute = (pathname: string): Route => {
   if (pathname === '' || pathname === '/') {

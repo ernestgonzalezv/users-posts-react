@@ -70,6 +70,7 @@ test('switches language and theme and remembers both', async ({ page }) => {
 
 test('stacks the layout on a phone and scrolls to the posts @mobile', async ({ page }) => {
   await mockApi(page)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
   await page.getByRole('button', { name: 'Show posts by Clementine Bauch' }).click()
   await expect(page.getByRole('heading', { level: 2, name: 'Clementine Bauch' })).toBeInViewport()

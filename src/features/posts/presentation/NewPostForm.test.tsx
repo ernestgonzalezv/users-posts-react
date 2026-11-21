@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import type { FetchFunction } from '../../../core/http-client'
@@ -116,6 +116,55 @@ describe('NewPostForm', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument()
     expect(title).toHaveValue('Next one')
     expect(body).toHaveValue('World')
+  })
+})
+
+describe('NewPostForm edge cases', () => {
+  it('focuses the body when only the body is missing', async () => {
+    const { onSubmit, title, body, publish } = renderForm(fakeFetch(() => json(created)))
+    await userEvent.type(title, 'Just a title')
+    await userEvent.click(publish)
+    expect(body).toHaveFocus()
+    expect(body).toHaveAccessibleDescription('This field is required.')
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('ignores a second submit while a post is in flight', async () => {
+    const { onSubmit, title, body } = renderForm(fakeFetch(() => new Promise(() => undefined)))
+    await userEvent.type(title, 'First')
+    await userEvent.type(body, 'Body')
+    await userEvent.type(title, '{Enter}')
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('form')).toHaveAttribute('aria-busy', 'true')
+    fireEvent.submit(screen.getByRole('form'))
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps a body typed meanwhile when the failure restores the draft', async () => {
+    let fail: (response: Response) => void = () => undefined
+    const { title, body, publish } = renderForm(
+      fakeFetch(
+        () =>
+          new Promise<Response>((resolve) => {
+            fail = resolve
+          }),
+      ),
+    )
+    await userEvent.type(title, 'Hello')
+    await userEvent.type(body, 'World')
+    await userEvent.click(publish)
+    await userEvent.type(body, 'Fresh body')
+    fail(json({}, 500))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(title).toHaveValue('Hello')
+    expect(body).toHaveValue('Fresh body')
+  })
+
+  it('turns the body counter red past a thousand characters', async () => {
+    const { body } = renderForm(fakeFetch(() => json(created)))
+    await userEvent.click(body)
+    await userEvent.paste('x'.repeat(1001))
+    expect(screen.getByText('1001/1000')).toHaveClass('counterOver')
   })
 })
 

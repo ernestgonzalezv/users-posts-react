@@ -15,7 +15,7 @@ export default defineConfig({
       exclude: ['src/**/*.test.*', 'src/test/**', 'src/main.tsx', 'src/**/*.d.ts'],
       reporter: ['text-summary', 'html', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
-      thresholds: { lines: 95, statements: 95, branches: 90, functions: 95 },
+      thresholds: { lines: 100, statements: 100, branches: 100, functions: 100 },
     },
   },
 })

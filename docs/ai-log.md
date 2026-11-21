@@ -260,3 +260,14 @@ The README summarises this file.
   red job through, because its check relied on a `\b` word boundary that BSD grep does not know;
   the gate now reads the status column.
 - **Corrected:** the job is pinned to `ubuntu-24.04`, which Playwright supports.
+
+## PR 24 — full coverage
+
+- **Asked:** push coverage as far as it goes.
+- **Accepted:** thirteen tests for the uncovered lines and branches, two small refactors where the
+  uncovered branch was unreachable, thresholds raised to 100 % on every metric so they cannot drift back.
+- **Corrected:** a first server-snapshot assertion compared against React's text separators and was
+  rewritten over a single template string; a keyboard test forbade the click that Enter fires on a
+  focused radio button, which is correct behaviour, so the test now expects it. The busy guard of the
+  form cannot be reached from the keyboard because the submit button is disabled, so the test submits
+  the form programmatically.

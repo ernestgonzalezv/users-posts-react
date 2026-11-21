@@ -23,6 +23,7 @@ const NO_POSTS: readonly Post[] = []
 
 interface PostListProps {
   readonly user: User
+  readonly toastMs?: number
 }
 
 const classOf = (post: Post): string | undefined => {
@@ -36,7 +37,7 @@ const classOf = (post: Post): string | undefined => {
   }
 }
 
-export function PostList({ user }: PostListProps) {
+export function PostList({ user, toastMs }: PostListProps) {
   const t = useT()
   const { createPost } = useContainer()
   const { state, reload, mutate } = useUserPosts(user.id)
@@ -114,6 +115,7 @@ export function PostList({ user }: PostListProps) {
         <Toast
           key={toast.id}
           message={toast.message}
+          {...(toastMs === undefined ? {} : { durationMs: toastMs })}
           onDone={() => {
             setToast(null)
           }}
