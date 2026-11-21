@@ -45,3 +45,21 @@ describe('useDebouncedValue', () => {
     expect(result.current).toBe('a')
   })
 })
+
+describe('useDebouncedValue with an immediate predicate', () => {
+  it('settles at once when the predicate says so', () => {
+    vi.useFakeTimers()
+    try {
+      const { result, rerender } = renderHook(({ value }) => useDebouncedValue(value, 300, (v) => v === ''), {
+        initialProps: { value: 'abc' },
+      })
+      rerender({ value: '' })
+      act(() => {
+        vi.advanceTimersByTime(0)
+      })
+      expect(result.current).toBe('')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+})

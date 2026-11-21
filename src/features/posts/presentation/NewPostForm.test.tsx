@@ -92,3 +92,13 @@ describe('NewPostForm', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })
+
+describe('NewPostForm counters', () => {
+  it('counts the title as it will be sent, with inner spaces collapsed and ends trimmed', async () => {
+    const { title, body } = renderForm(fakeFetch(() => json(created)))
+    await userEvent.type(title, '  Hello    world  ')
+    await userEvent.type(body, ' x ')
+    expect(screen.getByText('11/100')).toBeInTheDocument()
+    expect(screen.getByText('1/1000')).toBeInTheDocument()
+  })
+})
