@@ -91,6 +91,22 @@ describe('App', () => {
     expect(screen.getByRole('main')).toHaveTextContent('Pick a user')
   })
 
+  it('keeps a written post after a reload', async () => {
+    const route = (url: string, init: RequestInit | undefined) =>
+      init?.method === 'POST' ? json({ id: 101, userId: 1, title: 'x', body: 'y' }, 201) : byRoute(url)
+    const first = render(<App container={createContainer({ fetchFunction: fakeFetch(route) })} />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Show posts by Leanne Graham' }))
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Survives')
+    await userEvent.type(screen.getByLabelText('Body'), 'a reload')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    await screen.findByText('3 posts')
+    first.unmount()
+    render(<App container={createContainer({ fetchFunction: fakeFetch(route) })} />)
+    expect(await screen.findByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Survives')
+  })
+
   it('scrolls the detail into view on a stacked layout', async () => {
     vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({ matches: query.includes('max-width') }) as MediaQueryList)
     const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView')

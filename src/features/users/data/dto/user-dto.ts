@@ -1,3 +1,5 @@
+import { isRecord } from '../../../../core/guards'
+
 export interface UserDto {
   readonly id: number
   readonly name: string
@@ -7,8 +9,6 @@ export interface UserDto {
   readonly company?: { readonly name?: string }
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
-
 export const isUserDto = (value: unknown): value is UserDto =>
   isRecord(value) &&
   typeof value.id === 'number' &&
@@ -16,6 +16,7 @@ export const isUserDto = (value: unknown): value is UserDto =>
   typeof value.username === 'string' &&
   typeof value.email === 'string' &&
   (value.website === undefined || typeof value.website === 'string') &&
-  (value.company === undefined || (isRecord(value.company) && (value.company.name === undefined || typeof value.company.name === 'string')))
+  (value.company === undefined ||
+    (isRecord(value.company) && (value.company.name === undefined || typeof value.company.name === 'string')))
 
 export const isUserDtoList = (value: unknown): value is UserDto[] => Array.isArray(value) && value.every(isUserDto)

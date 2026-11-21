@@ -66,7 +66,7 @@ describe('NewPostForm', () => {
     await userEvent.type(body, 'World')
     await userEvent.click(publish)
     expect(await screen.findByRole('button', { name: 'Publish' })).toBeEnabled()
-    expect(onCreated).toHaveBeenCalledWith(created)
+    expect(onCreated).toHaveBeenCalledWith({ id: -1, userId: 3, title: 'Hello', body: 'World', source: 'written' })
     expect(title).toHaveValue('')
     expect(body).toHaveValue('')
   })

@@ -175,3 +175,13 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   oversized id and any other path land on a "not here" state with a way back that replaces the entry.
 - **The users resource moved up to the App**, which resolves the id against the directory; the list is
   presentational now.
+
+## Written posts kept (2026-11-21, PR 17)
+
+- **A post gets a `source`** (`remote` or `written`) instead of a negative-id convention; the badge and
+  the tint read the source.
+- **Written posts live in local storage per user** behind a domain port (`WrittenPostStore`); the
+  repository lists them before the remote ones and stores a post only after the server accepted it.
+  Corrupt storage reads as empty; a failed write keeps the session's posts in memory.
+- **`useResource` gained `mutate`** so the list updates in place after a publish instead of refetching;
+  a mutation while loading or after a failure is ignored, the next load merges from the store anyway.

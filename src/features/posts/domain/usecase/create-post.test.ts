@@ -13,7 +13,10 @@ describe('validateDraft', () => {
   })
 
   it('caps the title at 100 and the body at 1000 characters', () => {
-    expect(validateDraft({ userId: 1, title: 'a'.repeat(101), body: 'b'.repeat(1001) })).toEqual({ title: 'too-long', body: 'too-long' })
+    expect(validateDraft({ userId: 1, title: 'a'.repeat(101), body: 'b'.repeat(1001) })).toEqual({
+      title: 'too-long',
+      body: 'too-long',
+    })
     expect(validateDraft({ userId: 1, title: 'a'.repeat(100), body: 'b'.repeat(1000) })).toEqual({})
   })
 
@@ -31,7 +34,7 @@ describe('CreatePost', () => {
   })
 
   it('sends the normalized draft and returns the created post', async () => {
-    const created = { id: 101, userId: 1, title: 'Hello world', body: 'Body' }
+    const created = { id: 101, userId: 1, title: 'Hello world', body: 'Body', source: 'remote' as const }
     const create = vi.fn<PostRepository['create']>().mockResolvedValue({ ok: true, value: created })
     const controller = new AbortController()
     const result = await new CreatePost(repositoryWith(create)).execute(

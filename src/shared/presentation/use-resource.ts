@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useEffectEvent, useState } from 'react'
 import type { AppError } from '../../core/app-error'
 import type { Result } from '../../core/result'
+import { success } from '../../core/result'
 
 export type ResourceState<T> =
   | { readonly status: 'idle' }
@@ -16,12 +17,13 @@ export type Loader<T> = (signal: AbortSignal) => Promise<Result<T>>
 export interface Resource<T> {
   readonly state: ResourceState<T>
   readonly reload: () => void
+  readonly mutate: (update: (data: T) => T) => void
 }
 
 interface Settled<T> {
   readonly load: Loader<T>
   readonly attempt: number
-  readonly state: ResourceState<T>
+  readonly result: Result<T>
 }
 
 const isEmptyValue = (value: unknown): boolean => Array.isArray(value) && value.length === 0
@@ -37,7 +39,7 @@ export function useResource<T>(load: Loader<T> | null, isEmpty: (value: T) => bo
   const [settled, setSettled] = useState<Settled<T> | null>(null)
   const [attempt, setAttempt] = useState(0)
   const settleWith = useEffectEvent((loader: Loader<T>, result: Result<T>) => {
-    setSettled({ load: loader, attempt, state: settle(result, isEmpty) })
+    setSettled({ load: loader, attempt, result })
   })
 
   useEffect(() => {
@@ -60,12 +62,18 @@ export function useResource<T>(load: Loader<T> | null, isEmpty: (value: T) => bo
     setAttempt((current) => current + 1)
   }, [])
 
+  const mutate = useCallback((update: (data: T) => T) => {
+    setSettled((current) =>
+      current?.result.ok !== true ? current : { ...current, result: success(update(current.result.value)) },
+    )
+  }, [])
+
   const state: ResourceState<T> =
     load === null
       ? { status: 'idle' }
       : settled !== null && settled.load === load && settled.attempt === attempt
-        ? settled.state
+        ? settle(settled.result, isEmpty)
         : { status: 'loading' }
 
-  return { state, reload }
+  return { state, reload, mutate }
 }

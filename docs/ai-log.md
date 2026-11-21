@@ -196,3 +196,13 @@ The README summarises this file.
   addresses.
 - **Corrected:** nothing on the first run; the URL is reset between tests in the setup so one test
   cannot leak its address into the next.
+
+## PR 17 — written posts kept
+
+- **Asked:** keep written posts per user so switching users or reloading does not drop them (the API
+  never persists writes).
+- **Accepted:** a local store behind a domain port, ids assigned below zero so they never collide with
+  the server's, the resource hook mutating in place, the post `source` union replacing the negative-id
+  check.
+- **Corrected:** two tests assumed the created post was the server's answer (always id 101, title
+  "Fresh"); the list now shows what the person typed, which is what they expect to see.
