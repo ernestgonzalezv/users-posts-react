@@ -48,6 +48,7 @@ export const en = {
   'action.backToList': 'Back to the list',
   'action.clear': 'Clear',
   'action.clearSearch': 'Clear search',
+  'action.showMore': 'Show {count} more',
   'action.retry': 'Retry',
   'error.network': 'No connection. Check your network and try again.',
   'error.timeout': 'The server took too long to answer.',

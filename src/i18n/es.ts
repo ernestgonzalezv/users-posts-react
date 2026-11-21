@@ -50,6 +50,7 @@ export const es: Dictionary = {
   'action.backToList': 'Volver a la lista',
   'action.clear': 'Limpiar',
   'action.clearSearch': 'Limpiar la búsqueda',
+  'action.showMore': 'Ver {count} más',
   'action.retry': 'Reintentar',
   'error.network': 'Sin conexión. Revisa tu red e inténtalo de nuevo.',
   'error.timeout': 'El servidor tardó demasiado en responder.',

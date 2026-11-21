@@ -188,6 +188,23 @@ describe('PostList', () => {
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
 
+  it('shows twenty posts and the rest on demand', async () => {
+    const many = Array.from({ length: 45 }, (_, index) => ({
+      id: index + 1,
+      userId: 3,
+      title: `Post ${String(index + 1)}`,
+      body: 'b',
+    }))
+    renderPosts(fakeFetch(() => json(many)))
+    expect(await screen.findByText('45 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(20)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 20 more' }))
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(40)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 5 more' }))
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(45)
+    expect(screen.queryByRole('button', { name: /more$/ })).not.toBeInTheDocument()
+  })
+
   it('drops the answer of a previous user that lands after switching', async () => {
     let releaseFirst: (response: Response) => void = () => undefined
     const first = new Promise<Response>((resolve) => {

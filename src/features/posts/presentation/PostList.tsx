@@ -2,11 +2,12 @@ import type { CSSProperties } from 'react'
 import { useRef, useState } from 'react'
 import type { Result } from '../../../core/result'
 import { useContainer } from '../../../di/container-context'
+import { usePaged } from '../../../shared/presentation/use-paged'
 import { useT } from '../../../i18n/locale-context'
 import { counted } from '../../../i18n/translate'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
-import { FileTextIcon } from '../../../shared/ui/icons'
+import { ChevronDownIcon, FileTextIcon } from '../../../shared/ui/icons'
 import { Spinner } from '../../../shared/ui/Spinner'
 import { Toast } from '../../../shared/ui/Toast'
 import type { User } from '../../users/domain/model/user'
@@ -16,6 +17,9 @@ import { normalizeDraft } from '../domain/usecase/create-post'
 import { NewPostForm } from './NewPostForm'
 import styles from './PostList.module.css'
 import { useUserPosts } from './use-user-posts'
+
+const PAGE_SIZE = 20
+const NO_POSTS: readonly Post[] = []
 
 interface PostListProps {
   readonly user: User
@@ -42,6 +46,7 @@ export function PostList({ user }: PostListProps) {
     readonly message: string
   } | null>(null)
   const posts = state.status === 'success' ? state.data : state.status === 'empty' ? [] : null
+  const page = usePaged(posts ?? NO_POSTS, PAGE_SIZE)
 
   const publish = async (draft: NewPost): Promise<Result<Post>> => {
     pendingCount.current += 1
@@ -79,7 +84,7 @@ export function PostList({ user }: PostListProps) {
         )}
         {posts !== null && posts.length > 0 && (
           <ol className={styles.list}>
-            {posts.map((post, index) => (
+            {page.shown.map((post, index) => (
               <li key={post.id} className={classOf(post)} style={{ '--i': index } as CSSProperties}>
                 <span className={styles.number} aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
@@ -95,6 +100,14 @@ export function PostList({ user }: PostListProps) {
               </li>
             ))}
           </ol>
+        )}
+        {page.hidden > 0 && (
+          <div className={styles.more}>
+            <button type="button" onClick={page.showMore}>
+              <ChevronDownIcon />
+              {t('action.showMore', { count: Math.min(page.hidden, PAGE_SIZE) })}
+            </button>
+          </div>
         )}
       </section>
       {toast !== null && (

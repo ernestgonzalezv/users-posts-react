@@ -96,6 +96,28 @@ describe('UserList', () => {
   })
 })
 
+describe('UserList paging', () => {
+  it('shows fifty users, then fifty more on demand, and resets on a search', async () => {
+    const many = Array.from({ length: 120 }, (_, index) => ({
+      id: index + 1,
+      name: `Person ${String(index + 1).padStart(3, '0')}`,
+      username: `user${String(index + 1)}`,
+      email: `p${String(index + 1)}@x.y`,
+    }))
+    renderList(fakeFetch(() => json(many)))
+    expect(await screen.findByText('120 users')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(50)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 50 more' }))
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(100)
+    await userEvent.click(screen.getByRole('button', { name: 'Show 20 more' }))
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(120)
+    expect(screen.queryByRole('button', { name: /^Show \d+ more/ })).not.toBeInTheDocument()
+    await userEvent.type(screen.getByRole('searchbox'), 'Person 1')
+    expect(await screen.findByText('21 of 120')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Show posts by/ })).toHaveLength(21)
+  })
+})
+
 describe('UserList search', () => {
   it('filters by name or username ignoring case and accents, after the debounce', async () => {
     renderList(fakeFetch(() => json(users)))

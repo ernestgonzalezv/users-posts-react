@@ -217,3 +217,10 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **Blank names fall back** to the username, then to `#id`; initials fall back to the first grapheme.
 - **Counts pluralise** (`1 post`, `1 user`) through `counted(t, key, n)` with a `.one` key per language.
 - **Chips cap at the header width**, so a 300-character email cannot widen the page.
+
+## Paged lists (2026-11-21, PR 21)
+
+- **Client-side paging, not virtualisation**: fifty users and twenty posts at a time with a "Show N
+  more" button; the ten-and-ten of JSONPlaceholder never show it, a thousand-item answer stays usable.
+- **`usePaged` resets to the first page when the items change** (a new search, a new user); the search
+  matches are memoised so a re-render alone does not reset it.
