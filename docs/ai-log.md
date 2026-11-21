@@ -289,3 +289,11 @@ The README summarises this file.
   back with the draft kept, Retry publishes.
 - **Corrected:** the first draft bound the global `fetch` from `main.tsx`, which the ratchet forbids; the
   default lives in `core/` like the delay wrapper's.
+
+## PR 29 — development wrappers removed
+
+- **Asked:** take the slow and flaky modes out of the project, and tell people to open the production
+  build rather than the dev server.
+- **Accepted:** PRs #39 and #40 reverted by hand (the wrappers, their tests, the scripts, the typings,
+  the screenshots, the README and CLAUDE.md lines); the README leads with build and preview and explains
+  the StrictMode double request and the DevTools way to see the loading and error states.

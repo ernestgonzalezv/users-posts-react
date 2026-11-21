@@ -267,3 +267,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **It sits inside the delay wrapper** even with no delay, so the StrictMode effect that is aborted at
   mount never counts as the first attempt.
 - **Production never reads either variable**; the build has no wrapper at all.
+
+## Development wrappers removed (2026-11-21, PR 29)
+
+- **`delayedFetch`, `failFirstFetch`, `dev:slow` and `dev:flaky` are gone**: Ernesto did not ask for them
+  and does not want test scaffolding in the product; a recruiter sees the same states by throttling or
+  switching off the network in DevTools, which the README now says.
+- **The README opens the production build first** (`npm run build && npm run preview`); the dev server
+  is for working on it, with a note on why StrictMode shows every request twice.
