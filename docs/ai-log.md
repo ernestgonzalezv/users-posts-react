@@ -160,3 +160,12 @@ The README summarises this file.
   published to a `badges` branch by the workflow (Codemagic has no coverage badge of its own and
   external badge services need an account), `codemagic.yaml` running the same gate.
 - **Corrected:** nothing; the numbers in the README come from the first run (97.7 % lines).
+
+## PR 13 — badges branch
+
+- **Asked:** the release after PR 12; `git fetch` stalled instead.
+- **Found:** the first badge run had committed `node_modules` and the HTML report, because
+  `git rm -rf .` on the orphan branch also removed `.gitignore` before `git add -A`; the branch weighed
+  ten thousand objects and every fetch tried to download it. Found by tracing the fetch, not by guessing.
+- **Corrected:** the job now builds the branch in an empty directory with only the badge files and
+  replaces it, so the branch stays one small commit.

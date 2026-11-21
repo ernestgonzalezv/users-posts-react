@@ -144,3 +144,9 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **The badge is self-hosted**: `scripts/coverage-badge.sh` writes the SVG, the workflow commits it to
   the `badges` branch per source branch; the README reads `coverage-main.svg`.
 - **Codemagic runs the same `verify.sh`**; its build badge appears once the repository is connected there.
+
+## Badges branch (2026-11-20, PR 13)
+
+- **`badges` is a generated, single-commit branch**: each push run rebuilds it in an empty directory
+  from the badge files already there plus the new pair, and replaces it. It is never checked out and
+  never merged; replacing it is the one force-push the repository allows, because nothing is based on it.

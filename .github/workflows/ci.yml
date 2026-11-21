@@ -45,18 +45,25 @@ jobs:
       - run: npm run test:coverage
       - run: scripts/coverage-badge.sh
       - name: Publish the badge to the badges branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+          out="$(mktemp -d)"
+          if git fetch -q origin badges; then
+            git ls-tree --name-only origin/badges | { grep -E '^coverage-[^/]+\.(svg|json)$' || true; } | while read -r f; do
+              git show "origin/badges:$f" > "$out/$f"
+            done
+          fi
+          cp coverage/badge.svg "$out/coverage-${GITHUB_REF_NAME}.svg"
+          cp coverage/coverage-summary.json "$out/coverage-${GITHUB_REF_NAME}.json"
+          cd "$out"
+          git init -q -b badges
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p /tmp/badges && cp coverage/badge.svg coverage/coverage-summary.json /tmp/badges/
-          git fetch origin badges || true
-          git checkout -B badges origin/badges 2>/dev/null || git checkout --orphan badges
-          git rm -rfq . 2>/dev/null || true
-          cp /tmp/badges/badge.svg "coverage-${GITHUB_REF_NAME}.svg"
-          cp /tmp/badges/coverage-summary.json "coverage-${GITHUB_REF_NAME}.json"
-          git add -A
-          git commit -qm "coverage badge for ${GITHUB_REF_NAME} (${GITHUB_SHA::7})" || exit 0
-          git push origin badges
+          git add .
+          git commit -qm "coverage badges (${GITHUB_REF_NAME} at ${GITHUB_SHA::7})"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges
 
   semantic-title:
     name: Semantic PR title
