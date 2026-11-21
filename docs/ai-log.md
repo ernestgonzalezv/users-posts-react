@@ -187,3 +187,12 @@ The README summarises this file.
   the Codecov badge in the README, `codecov.yml` aligned with the local thresholds.
 - **Removed:** the badges branch job, `scripts/coverage-badge.sh`, `codemagic.yaml` and their
   README paragraphs; the generated `badges` branch is deleted after the merge.
+
+## PR 16 — router
+
+- **Asked:** the chosen user in the URL so a refresh keeps the selection (first of the 1.0.0 next steps).
+- **Accepted:** a hand-written route hook over the History API with a parsed route union, the missing
+  state for any address that names nobody, back and forward buttons honoured, tests for thirteen bad
+  addresses.
+- **Corrected:** nothing on the first run; the URL is reset between tests in the setup so one test
+  cannot leak its address into the next.

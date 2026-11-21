@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
 import { DEBOUNCE_MS, useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
+import type { Resource } from '../../../shared/presentation/use-resource'
 import { Avatar } from '../../../shared/ui/Avatar'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
@@ -12,18 +13,18 @@ import type { User } from '../domain/model/user'
 import { initialsOf } from '../domain/model/user'
 import { searchUsers } from '../domain/usecase/search-users'
 import styles from './UserList.module.css'
-import { useUsers } from './use-users'
 
 const isBlank = (value: string): boolean => value.trim() === ''
 
 interface UserListProps {
+  readonly users: Resource<readonly User[]>
   readonly selectedId: number | null
   readonly onSelect: (user: User) => void
 }
 
-export function UserList({ selectedId, onSelect }: UserListProps) {
+export function UserList({ users, selectedId, onSelect }: UserListProps) {
   const t = useT()
-  const { state, reload } = useUsers()
+  const { state, reload } = users
   const [query, setQuery] = useState('')
   const settledQuery = useDebouncedValue(query, DEBOUNCE_MS, isBlank)
   const loaded = state.status === 'success' ? state.data : null
