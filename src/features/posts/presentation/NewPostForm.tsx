@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from 'react'
+import { textLength } from '../../../core/text'
 import type { AppError } from '../../../core/app-error'
 import { useT } from '../../../i18n/locale-context'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
@@ -7,7 +8,7 @@ import { Spinner } from '../../../shared/ui/Spinner'
 import type { NewPost } from '../domain/model/new-post'
 import { BODY_MAX, TITLE_MAX } from '../domain/model/new-post'
 import type { DraftFaults, FieldFault, Publish } from '../domain/usecase/create-post'
-import { normalizeTitle, validateDraft } from '../domain/usecase/create-post'
+import { normalizeBody, normalizeTitle, validateDraft } from '../domain/usecase/create-post'
 import styles from './NewPostForm.module.css'
 
 interface NewPostFormProps {
@@ -67,8 +68,8 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
     void send(draft)
   }
 
-  const titleLength = normalizeTitle(title).length
-  const bodyLength = body.trim().length
+  const titleLength = textLength(normalizeTitle(title))
+  const bodyLength = textLength(normalizeBody(body))
   const titleFault = faultText(faults.title, TITLE_MAX)
   const bodyFault = faultText(faults.body, BODY_MAX)
 
@@ -89,6 +90,7 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
           id={`${id}-title`}
           className={styles.input}
           value={title}
+          maxLength={TITLE_MAX * 4}
           placeholder={t('form.title.placeholder')}
           aria-invalid={titleFault !== null}
           aria-describedby={titleFault === null ? undefined : `${id}-title-fault`}
@@ -115,6 +117,7 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
           className={styles.textarea}
           value={body}
           rows={4}
+          maxLength={BODY_MAX * 4}
           placeholder={t('form.body.placeholder')}
           aria-invalid={bodyFault !== null}
           aria-describedby={bodyFault === null ? undefined : `${id}-body-fault`}

@@ -204,3 +204,16 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   (old engines, test doubles) is honoured once and simply not followed live.
 - **The paint-before-React script in `index.html` already did the right thing**: any value other than
   light or dark falls back to the media query.
+
+## Any input (2026-11-21, PR 20)
+
+- **Lengths are graphemes** (`Intl.Segmenter`, with a code-point fallback): a flag or a family emoji
+  counts once in the counters and in the validation. The inputs carry `maxLength` at four times the
+  limit as a hard cap against pathological pastes; the red counter still does the explaining.
+- **Control and zero-width characters are stripped** from drafts and from server text; the body keeps
+  `\n` and `\t`, normalises CRLF and collapses runs of blank lines to one.
+- **Ids must be safe integers** at the DTO guard; repositories drop a repeated id (React keys stay
+  unique); the route accepts any safe integer, so a server id of 0 or below is still reachable.
+- **Blank names fall back** to the username, then to `#id`; initials fall back to the first grapheme.
+- **Counts pluralise** (`1 post`, `1 user`) through `counted(t, key, n)` with a `.one` key per language.
+- **Chips cap at the header width**, so a 300-character email cannot widen the page.

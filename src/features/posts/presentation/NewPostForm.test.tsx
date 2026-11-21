@@ -127,4 +127,12 @@ describe('NewPostForm counters', () => {
     expect(screen.getByText('11/100')).toBeInTheDocument()
     expect(screen.getByText('1/1000')).toBeInTheDocument()
   })
+
+  it('counts an emoji as one character and caps what can be typed well above the limit', async () => {
+    const { title, body } = renderForm(fakeFetch(() => json(created)))
+    await userEvent.type(title, '🇪🇸🇪🇸')
+    expect(screen.getByText('2/100')).toBeInTheDocument()
+    expect(title).toHaveAttribute('maxlength', '400')
+    expect(body).toHaveAttribute('maxlength', '4000')
+  })
 })

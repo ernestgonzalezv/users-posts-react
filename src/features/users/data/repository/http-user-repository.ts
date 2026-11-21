@@ -1,6 +1,7 @@
 import type { HttpClient } from '../../../../core/http-client'
 import type { Result } from '../../../../core/result'
 import { mapResult } from '../../../../core/result'
+import { uniqueById } from '../../../../core/unique'
 import type { User } from '../../domain/model/user'
 import type { UserRepository } from '../../domain/repository/user-repository'
 import { isUserDtoList } from '../dto/user-dto'
@@ -15,6 +16,6 @@ export class HttpUserRepository implements UserRepository {
 
   async getAll(signal?: AbortSignal): Promise<Result<readonly User[]>> {
     const result = await this.http.get('/users', isUserDtoList, { signal })
-    return mapResult(result, (dtos) => dtos.map(toUser))
+    return mapResult(result, (dtos) => uniqueById(dtos.map(toUser)))
   }
 }

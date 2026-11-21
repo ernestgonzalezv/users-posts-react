@@ -9,8 +9,8 @@ export interface PostDto {
 
 export const isPostDto = (value: unknown): value is PostDto =>
   isRecord(value) &&
-  typeof value.id === 'number' &&
-  typeof value.userId === 'number' &&
+  Number.isSafeInteger(value.id) &&
+  Number.isSafeInteger(value.userId) &&
   typeof value.title === 'string' &&
   typeof value.body === 'string'
 

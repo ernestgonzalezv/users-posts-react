@@ -224,3 +224,13 @@ The README summarises this file.
 - **Corrected:** the first subscription assumed every `MediaQueryList` has `addEventListener`; three
   App tests stub `matchMedia` with a bare `{ matches }` and broke, so the subscription checks for the
   method and the provider has a test for that shape.
+
+## PR 20 — any input
+
+- **Asked:** make the app hold up under any input, from the keyboard or from the API.
+- **Accepted:** grapheme-aware lengths, control-character stripping, safe-integer ids, duplicate ids
+  dropped, blank names named, plural forms, a hard cap on the inputs, the chip width, the debounce
+  hook's missing dependency through `useEffectEvent`.
+- **Corrected:** the first title normaliser deleted tabs before collapsing whitespace, gluing words
+  together ("ABcD"); it now keeps them as whitespace. A shell heredoc turned `\u200B` into the real
+  zero-width character inside the regex, caught by `no-irregular-whitespace`.

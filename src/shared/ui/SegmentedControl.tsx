@@ -16,7 +16,8 @@ interface SegmentedControlProps<T extends string> {
 
 export function SegmentedControl<T extends string>({ label, value, options, onChange }: SegmentedControlProps<T>) {
   const moveSelection = (event: KeyboardEvent<HTMLDivElement>) => {
-    const delta = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0
+    const delta =
+      event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0
     if (delta === 0) {
       return
     }

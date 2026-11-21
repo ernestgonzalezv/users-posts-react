@@ -11,7 +11,7 @@ export interface UserDto {
 
 export const isUserDto = (value: unknown): value is UserDto =>
   isRecord(value) &&
-  typeof value.id === 'number' &&
+  Number.isSafeInteger(value.id) &&
   typeof value.name === 'string' &&
   typeof value.username === 'string' &&
   typeof value.email === 'string' &&

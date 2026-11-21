@@ -1,6 +1,6 @@
 export type Route = { readonly kind: 'home' } | { readonly kind: 'user'; readonly id: number } | { readonly kind: 'unknown' }
 
-const USER_PATH = /^\/users\/(\d{1,9})\/?$/
+const USER_PATH = /^\/users\/(-?\d{1,15})\/?$/
 
 export const parseRoute = (pathname: string): Route => {
   if (pathname === '' || pathname === '/') {
@@ -11,7 +11,7 @@ export const parseRoute = (pathname: string): Route => {
     return { kind: 'unknown' }
   }
   const id = Number(digits)
-  return id > 0 ? { kind: 'user', id } : { kind: 'unknown' }
+  return Number.isSafeInteger(id) ? { kind: 'user', id } : { kind: 'unknown' }
 }
 
 export const pathOf = (route: Route): string => (route.kind === 'user' ? `/users/${route.id}` : '/')

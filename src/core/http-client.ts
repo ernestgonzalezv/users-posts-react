@@ -41,12 +41,7 @@ export class HttpClient {
     return this.request(path, init, guard, options)
   }
 
-  private async request<T>(
-    path: string,
-    init: RequestInit,
-    guard: Guard<T>,
-    options: RequestOptions,
-  ): Promise<Result<T>> {
+  private async request<T>(path: string, init: RequestInit, guard: Guard<T>, options: RequestOptions): Promise<Result<T>> {
     if (options.signal?.aborted) {
       return failure(abortedError())
     }
