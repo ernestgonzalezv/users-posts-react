@@ -280,3 +280,12 @@ The README summarises this file.
 - **Corrected:** the first draft passed the global `fetch` from `main.tsx`, which the `no-fetch-outside-core`
   ratchet rejects, and used a triple-slash reference that the `no-comments` ratchet counts as a comment; the
   default moved into `core/` and the reference was dropped since `tsconfig` already loads `vite/client`.
+
+## PR 27 — failing first request in development
+
+- **Asked:** hardcode a failure on the first request to see the error states.
+- **Accepted:** `failFirstFetch` in `core/`, keyed by method and url, behind `VITE_API_FAIL_FIRST`, with a
+  `dev:flaky` script; walked in a real browser: users error, Retry, posts error, Retry, publish rolled
+  back with the draft kept, Retry publishes.
+- **Corrected:** the first draft bound the global `fetch` from `main.tsx`, which the ratchet forbids; the
+  default lives in `core/` like the delay wrapper's.
