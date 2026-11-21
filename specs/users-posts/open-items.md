@@ -136,3 +136,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **Keyframes are declared in the module that uses them** because CSS Modules localises animation
   names; a global `@keyframes` is unreachable from a module.
 - **Entrances are staggered with `--i`** set inline per row (28 ms for users, 35 ms for posts).
+
+## Coverage (2026-11-20, PR 12)
+
+- **Thresholds** 95 % lines, statements and functions, 90 % branches, enforced by `verify` and CI;
+  `main.tsx`, the test helpers and the tests themselves are excluded.
+- **The badge is self-hosted**: `scripts/coverage-badge.sh` writes the SVG, the workflow commits it to
+  the `badges` branch per source branch; the README reads `coverage-main.svg`.
+- **Codemagic runs the same `verify.sh`**; its build badge appears once the repository is connected there.

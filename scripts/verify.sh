@@ -24,7 +24,7 @@ run_step() {
 
 summarize() {
   case "$1" in
-    Tests) printf '%s' "$2" | grep -E '^\s+Tests ' | sed -E 's/^ +//' ;;
+    Tests) printf '%s · lines %s' "$(printf '%s' "$2" | grep -E '^\s+Tests ' | sed -E 's/^ +//')" "$(printf '%s' "$2" | grep -E '^Lines' | grep -oE '[0-9.]+%')" ;;
     Ratchets) printf '%s' "$2" | tail -1 ;;
     *) printf '' ;;
   esac
@@ -32,7 +32,7 @@ summarize() {
 
 run_step Typecheck npm run -s typecheck
 run_step Lint npm run -s lint
-run_step Tests npm run -s test
+run_step Tests npm run -s test:coverage
 run_step Build npm run -s build
 run_step Ratchets scripts/ratchet/ratchet.sh check
 
