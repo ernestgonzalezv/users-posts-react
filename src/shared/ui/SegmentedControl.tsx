@@ -24,9 +24,11 @@ export function SegmentedControl<T extends string>({ label, value, options, onCh
     event.preventDefault()
     const index = options.findIndex((option) => option.value === value)
     const target = (index + delta + options.length) % options.length
+    const radios = event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]')
     options.forEach((option, position) => {
       if (position === target) {
         onChange(option.value)
+        radios[position]?.focus()
       }
     })
   }

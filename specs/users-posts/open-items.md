@@ -268,6 +268,20 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   mount never counts as the first attempt.
 - **Production never reads either variable**; the build has no wrapper at all.
 
+## Edge cases from a browser sweep (2026-11-21, PR 28)
+
+- **A path outside `/users/<id>` is the home**: `/foo`, `/users`, `/users/` and `/USERS/3` showed "That
+  user is not here", which names a user nobody asked for; only `/users/<something unparseable>` keeps
+  that screen.
+- **The submit guard is synchronous**: three submits fired in the same tick sent three requests, because
+  the busy flag lives in render state and React had not rendered between them; an `inFlight` ref closes
+  the window. A human double click never reached it (React flushes each click), a script did.
+- **Arrows in the segmented control move the focus too**, as the roving tab index pattern expects; the
+  choice changed but the focus stayed on the old option.
+- **The sweep** (about a hundred cases in Chromium against the dev server: routes, history, search,
+  validation, grapheme counters, pastes, persistence, failures of every kind, slow and late answers,
+  timeouts, malformed bodies, duplicate ids, a thousand users, long unbroken strings at 320 px, themes,
+  locales, keyboard) found nothing else.
 ## Development wrappers removed (2026-11-21, PR 29)
 
 - **`delayedFetch`, `failFirstFetch`, `dev:slow` and `dev:flaky` are gone**: Ernesto did not ask for them

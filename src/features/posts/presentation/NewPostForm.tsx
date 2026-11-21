@@ -32,16 +32,19 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
   const [body, setBody] = useState('')
   const [faults, setFaults] = useState<DraftFaults>({})
   const [submission, setSubmission] = useState<Submission>({ status: 'idle' })
+  const inFlight = useRef(false)
   const busy = submission.status === 'submitting'
 
   const faultText = (fault: FieldFault | undefined, max: number): string | null =>
     fault === undefined ? null : fault === 'required' ? t('form.fault.required') : t('form.fault.too-long', { max })
 
   const send = async (draft: NewPost) => {
+    inFlight.current = true
     setSubmission({ status: 'submitting' })
     setTitle('')
     setBody('')
     const result = await onSubmit(draft)
+    inFlight.current = false
     if (result.ok) {
       setSubmission({ status: 'idle' })
       return
@@ -53,7 +56,7 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
 
   const submit = (event: { preventDefault: () => void }) => {
     event.preventDefault()
-    if (busy) {
+    if (busy || inFlight.current) {
       return
     }
     const draft = { userId, title, body }
