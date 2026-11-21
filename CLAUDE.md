@@ -54,7 +54,8 @@ Read the ADRs of your step before writing code:
 ## Commands
 
 ```sh
-npm run dev          # http://localhost:5173
+npm run build && npm run preview   # production build on http://localhost:4173
+npm run dev          # http://localhost:5173, with StrictMode (every request shows twice in DevTools, the first one cancelled)
 npm run typecheck
 npm run lint
 npm run test         # vitest run

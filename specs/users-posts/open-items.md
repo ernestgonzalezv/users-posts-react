@@ -250,3 +250,42 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   real four seconds; the app never passes it.
 - **The phone journey asks Playwright for reduced motion**, since smooth scrolling was still running
   between two measurements in CI.
+
+## Slow API in development (2026-11-21, PR 26)
+
+- **`npm run dev:slow`** sets `VITE_API_DELAY_MS=2000`; `main.tsx` wraps the global fetch in
+  `delayedFetch` only in development, so every loading state and spinner can be watched by a human.
+- **The delay honours the abort signal**: a user switched during the wait never fetches at all, which is
+  also what keeps StrictMode's first, cancelled effect from reaching the network.
+- **Production never reads the variable** (`import.meta.env.DEV` guard), so the build has no delay path.
+
+## Failing first request in development (2026-11-21, PR 27)
+
+- **`npm run dev:flaky`** sets `VITE_API_FAIL_FIRST=1` with a one second delay: the first request to each
+  method and url rejects like a network failure, the second goes through, so every error box, every
+  Retry and the rollback of a published post can be watched by a human.
+- **It sits inside the delay wrapper** even with no delay, so the StrictMode effect that is aborted at
+  mount never counts as the first attempt.
+- **Production never reads either variable**; the build has no wrapper at all.
+
+## Edge cases from a browser sweep (2026-11-21, PR 28)
+
+- **A path outside `/users/<id>` is the home**: `/foo`, `/users`, `/users/` and `/USERS/3` showed "That
+  user is not here", which names a user nobody asked for; only `/users/<something unparseable>` keeps
+  that screen.
+- **The submit guard is synchronous**: three submits fired in the same tick sent three requests, because
+  the busy flag lives in render state and React had not rendered between them; an `inFlight` ref closes
+  the window. A human double click never reached it (React flushes each click), a script did.
+- **Arrows in the segmented control move the focus too**, as the roving tab index pattern expects; the
+  choice changed but the focus stayed on the old option.
+- **The sweep** (about a hundred cases in Chromium against the dev server: routes, history, search,
+  validation, grapheme counters, pastes, persistence, failures of every kind, slow and late answers,
+  timeouts, malformed bodies, duplicate ids, a thousand users, long unbroken strings at 320 px, themes,
+  locales, keyboard) found nothing else.
+## Development wrappers removed (2026-11-21, PR 29)
+
+- **`delayedFetch`, `failFirstFetch`, `dev:slow` and `dev:flaky` are gone**: Ernesto did not ask for them
+  and does not want test scaffolding in the product; a recruiter sees the same states by throttling or
+  switching off the network in DevTools, which the README now says.
+- **The README opens the production build first** (`npm run build && npm run preview`); the dev server
+  is for working on it, with a note on why StrictMode shows every request twice.

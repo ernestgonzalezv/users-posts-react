@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ernestgonzalezv/users-posts-react/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ernestgonzalezv/users-posts-react/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ernestgonzalezv/users-posts-react/graph/badge.svg)](https://codecov.io/gh/ernestgonzalezv/users-posts-react)
-[![Tests](https://img.shields.io/badge/tests-227%20unit%20%2B%2010%20e2e-2f7a47)](src)
+[![Tests](https://img.shields.io/badge/tests-232%20unit%20%2B%2010%20e2e-2f7a47)](src)
 
 A small React 19 + TypeScript app over the public [JSONPlaceholder](https://jsonplaceholder.typicode.com)
 API: search users by name, read the chosen user's posts, write a new one. English and Spanish, light,
@@ -30,12 +30,18 @@ Node 20 or newer.
 
 ```sh
 npm ci
-npm run dev        # http://localhost:5173
+npm run build && npm run preview   # production build on http://localhost:4173
 ```
+
+To work on it, `npm run dev` serves it on `http://localhost:5173` with React StrictMode, which mounts
+every component twice on purpose: DevTools shows each request twice there, the first one cancelled.
+Use the production build to see the app as a user does. To watch the loading and error states, throttle
+or switch off the network in the DevTools Network tab: the spinners, the error boxes with Retry and the
+rollback of a failed post are all driven by the real request.
 
 | Command | What it does |
 |---|---|
-| `npm run test` | the unit and component suite with Vitest (227 tests in 44 files) |
+| `npm run test` | the unit and component suite with Vitest (232 tests in 44 files) |
 | `npm run test:coverage` | the suite with V8 coverage; fails under 100 % on lines, statements, functions and branches; HTML report in `coverage/` |
 | `npm run test:e2e` | the Playwright journeys (10, Chromium desktop and a Pixel 7) over the production build; `npx playwright install chromium` once |
 | `npm run typecheck` | `tsc -b --noEmit`, strict with `exactOptionalPropertyTypes` |
@@ -167,8 +173,10 @@ Everything listed as a next step in 1.0.0 shipped in 1.2.0, one pull request eac
 - End-to-end tests in a real browser with Playwright (#34, #35).
 - Router with the chosen user in the URL (#28).
 
-Along the way: any input is accepted and rendered safely (#32), and coverage sits at 100 % with the
-thresholds held there (#36).
+Along the way: any input is accepted and rendered safely (#32), coverage sits at 100 % with the
+thresholds held there (#36), and 1.2.1 closes what a sweep of about a hundred browser cases found:
+unknown paths go home, a submit cannot be fired twice in one tick, and the arrows of the theme control
+move the focus with the choice (#41).
 
 ## Next steps
 

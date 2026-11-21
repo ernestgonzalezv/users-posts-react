@@ -271,3 +271,38 @@ The README summarises this file.
   focused radio button, which is correct behaviour, so the test now expects it. The busy guard of the
   form cannot be reached from the keyboard because the submit button is disabled, so the test submits
   the form programmatically.
+
+## PR 26 — slow API in development
+
+- **Asked:** a local way to slow the API down to see the spinners.
+- **Accepted:** a `delayedFetch` wrapper in `core/` behind `VITE_API_DELAY_MS`, a `dev:slow` script, the
+  variable typed in `vite-env.d.ts`.
+- **Corrected:** the first draft passed the global `fetch` from `main.tsx`, which the `no-fetch-outside-core`
+  ratchet rejects, and used a triple-slash reference that the `no-comments` ratchet counts as a comment; the
+  default moved into `core/` and the reference was dropped since `tsconfig` already loads `vite/client`.
+
+## PR 27 — failing first request in development
+
+- **Asked:** hardcode a failure on the first request to see the error states.
+- **Accepted:** `failFirstFetch` in `core/`, keyed by method and url, behind `VITE_API_FAIL_FIRST`, with a
+  `dev:flaky` script; walked in a real browser: users error, Retry, posts error, Retry, publish rolled
+  back with the draft kept, Retry publishes.
+- **Corrected:** the first draft bound the global `fetch` from `main.tsx`, which the ratchet forbids; the
+  default lives in `core/` like the delay wrapper's.
+
+## PR 28 — edge cases from a browser sweep
+
+- **Asked:** run the app locally and try every edge case.
+- **Accepted:** three fixes out of a sweep of about a hundred cases: unknown paths go home, a
+  synchronous in-flight guard on the form, focus following the arrows in the segmented control. Each
+  one has a unit test that failed before the fix.
+- **Corrected:** most first "failures" were the probe's own (lists found by the wrong attribute, mocked
+  responses without CORS headers, a Vite module matched by a URL filter, a locale left in storage);
+  every one was checked against a screenshot before being called a defect.
+## PR 29 — development wrappers removed
+
+- **Asked:** take the slow and flaky modes out of the project, and tell people to open the production
+  build rather than the dev server.
+- **Accepted:** PRs #39 and #40 reverted by hand (the wrappers, their tests, the scripts, the typings,
+  the screenshots, the README and CLAUDE.md lines); the README leads with build and preview and explains
+  the StrictMode double request and the DevTools way to see the loading and error states.
