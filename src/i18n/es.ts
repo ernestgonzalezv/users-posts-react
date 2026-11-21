@@ -10,6 +10,7 @@ export const es: Dictionary = {
   'theme.label': 'Tema',
   'theme.light': 'Claro',
   'theme.dark': 'Oscuro',
+  'theme.system': 'Sistema',
   'users.title': 'Usuarios',
   'users.loading': 'Cargando usuarios…',
   'users.count': '{count} usuarios',

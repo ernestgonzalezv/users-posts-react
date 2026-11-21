@@ -8,7 +8,7 @@ import { AppBar } from './AppBar'
 const renderBar = () =>
   render(
     <LocaleProvider initialLocale="en">
-      <ThemeProvider initialTheme="light">
+      <ThemeProvider initialChoice="light">
         <AppBar />
       </ThemeProvider>
     </LocaleProvider>,
@@ -57,7 +57,7 @@ describe('AppBar', () => {
     vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-US'])
     render(
       <LocaleProvider>
-        <ThemeProvider initialTheme="light">
+        <ThemeProvider initialChoice="light">
           <AppBar />
         </ThemeProvider>
       </LocaleProvider>,
@@ -74,7 +74,7 @@ describe('AppBar', () => {
     vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['es-MX', 'en-US'])
     render(
       <LocaleProvider>
-        <ThemeProvider initialTheme="light">
+        <ThemeProvider initialChoice="light">
           <AppBar />
         </ThemeProvider>
       </LocaleProvider>,
