@@ -9,6 +9,7 @@ import type { PostRepository } from '../repository/post-repository'
 export type FieldName = 'title' | 'body'
 export type FieldFault = 'required' | 'too-long'
 export type DraftFaults = Partial<Readonly<Record<FieldName, FieldFault>>>
+export type Publish = (draft: NewPost) => Promise<Result<Post>>
 
 const faultOf = (value: string, max: number): FieldFault | null =>
   value === '' ? 'required' : value.length > max ? 'too-long' : null

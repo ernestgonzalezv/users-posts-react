@@ -147,6 +147,47 @@ describe('PostList', () => {
     expect(screen.getByText('New')).toBeInTheDocument()
   })
 
+  it('shows the post at once as sending, then marks it new when the server accepts it', async () => {
+    let accept: (response: Response) => void = () => undefined
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? new Promise<Response>((resolve) => {
+            accept = resolve
+          })
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Eager')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(screen.getByText('3 posts')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 4 })[0]).toHaveTextContent('Eager')
+    expect(screen.getByText('Sending…')).toBeInTheDocument()
+    expect(screen.queryByText('New')).not.toBeInTheDocument()
+    accept(json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201))
+    expect(await screen.findByText('New')).toBeInTheDocument()
+    expect(screen.queryByText('Sending…')).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('Published.')
+    expect(screen.getByText('3 posts')).toBeInTheDocument()
+  })
+
+  it('takes the post back out of the list when the server refuses it', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST' ? json({}, 503) : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Doomed')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('error (503)')
+    expect(screen.getByText('2 posts')).toBeInTheDocument()
+    expect(screen.queryByText('Doomed')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Title')).toHaveValue('Doomed')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
   it('drops the answer of a previous user that lands after switching', async () => {
     let releaseFirst: (response: Response) => void = () => undefined
     const first = new Promise<Response>((resolve) => {

@@ -1,4 +1,4 @@
-export type PostSource = 'remote' | 'written'
+export type PostSource = 'remote' | 'written' | 'pending'
 
 export interface Post {
   readonly id: number

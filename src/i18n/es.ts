@@ -28,6 +28,7 @@ export const es: Dictionary = {
   'posts.empty.title': 'Todavía no hay publicaciones',
   'posts.empty.hint': '{name} no ha escrito nada por ahora.',
   'post.new': 'Nueva',
+  'post.sending': 'Enviando…',
   'form.heading': 'Escribe una publicación',
   'form.title.label': 'Título',
   'form.title.placeholder': '¿De qué trata?',

@@ -206,3 +206,12 @@ The README summarises this file.
   check.
 - **Corrected:** two tests assumed the created post was the server's answer (always id 101, title
   "Fresh"); the list now shows what the person typed, which is what they expect to see.
+
+## PR 18 — optimistic insert
+
+- **Asked:** show the post immediately and roll it back if the server refuses it.
+- **Accepted:** a third post source, `pending`, with a dimmed row and a "Sending…" badge; the draft
+  restored into the fields on failure; the retry resends the failed draft.
+- **Corrected:** the literal-text ratchet matched the `=> Promise<Result<Post>>` type in the form's
+  props as if it were markup; the `Publish` function type now lives in the use case file, where the
+  rule does not look.

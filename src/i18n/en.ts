@@ -26,6 +26,7 @@ export const en = {
   'posts.empty.title': 'No posts yet',
   'posts.empty.hint': '{name} has not written anything so far.',
   'post.new': 'New',
+  'post.sending': 'Sending…',
   'form.heading': 'Write a post',
   'form.title.label': 'Title',
   'form.title.placeholder': 'What is it about?',
