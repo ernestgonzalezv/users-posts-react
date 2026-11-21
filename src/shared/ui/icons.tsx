@@ -154,3 +154,9 @@ export const MonitorIcon = (props: IconProps) => (
     <path d="M8 20h8M12 16v4" />
   </Icon>
 )
+
+export const ChevronDownIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M6 9l6 6 6-6" />
+  </Icon>
+)

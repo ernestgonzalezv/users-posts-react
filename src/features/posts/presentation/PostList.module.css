@@ -164,3 +164,9 @@
     background-color: transparent;
   }
 }
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0 var(--space-2);
+}

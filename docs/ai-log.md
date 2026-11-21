@@ -234,3 +234,12 @@ The README summarises this file.
 - **Corrected:** the first title normaliser deleted tabs before collapsing whitespace, gluing words
   together ("ABcD"); it now keeps them as whitespace. A shell heredoc turned `\u200B` into the real
   zero-width character inside the regex, caught by `no-irregular-whitespace`.
+
+## PR 21 — paged lists
+
+- **Asked:** pagination or virtualisation for large lists (the last of the 1.0.0 next steps).
+- **Accepted:** a small paging hook and a button at the foot of each list; page sizes as constants in
+  the components.
+- **Corrected:** the first version reset to the first page on every click, because the filtered users
+  array was rebuilt on each render; memoising the matches fixed it and the hook test was tightened to
+  use one stable array.
