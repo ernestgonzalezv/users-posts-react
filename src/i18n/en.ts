@@ -8,6 +8,7 @@ export const en = {
   'theme.label': 'Theme',
   'theme.light': 'Light',
   'theme.dark': 'Dark',
+  'theme.system': 'System',
   'users.title': 'Users',
   'users.loading': 'Loading users…',
   'users.count': '{count} users',

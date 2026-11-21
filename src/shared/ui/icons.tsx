@@ -147,3 +147,10 @@ export const ArrowLeftIcon = (props: IconProps) => (
     <path d="M19 12H5M11 6l-6 6 6 6" />
   </Icon>
 )
+
+export const MonitorIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </Icon>
+)

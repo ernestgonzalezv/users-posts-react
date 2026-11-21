@@ -215,3 +215,12 @@ The README summarises this file.
 - **Corrected:** the literal-text ratchet matched the `=> Promise<Result<Post>>` type in the form's
   props as if it were markup; the `Publish` function type now lives in the use case file, where the
   rule does not look.
+
+## PR 19 — system theme
+
+- **Asked:** a "system" option and the OS preference followed live.
+- **Accepted:** choice and theme split in the context, the media query as an external store, a third
+  segment with a monitor icon.
+- **Corrected:** the first subscription assumed every `MediaQueryList` has `addEventListener`; three
+  App tests stub `matchMedia` with a bare `{ matches }` and broke, so the subscription checks for the
+  method and the provider has a test for that shape.

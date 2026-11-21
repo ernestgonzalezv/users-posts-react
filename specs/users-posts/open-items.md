@@ -195,3 +195,12 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   the publish button alone is disabled while a post is in flight, so a second post can be drafted.
 - **Pending ids start at `Number.MIN_SAFE_INTEGER`** so they can never meet a written (small negative)
   or a remote (positive) id.
+
+## System theme (2026-11-21, PR 19)
+
+- **The stored value is a choice** (`light`, `dark`, `system`), the applied theme is derived from the
+  choice and `prefers-color-scheme`, read through `useSyncExternalStore` so an OS change re-renders.
+- **Anything unknown in storage reads as `system`**; a media query list without `addEventListener`
+  (old engines, test doubles) is honoured once and simply not followed live.
+- **The paint-before-React script in `index.html` already did the right thing**: any value other than
+  light or dark falls back to the media query.
