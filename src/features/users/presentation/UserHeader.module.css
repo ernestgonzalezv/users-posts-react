@@ -1,4 +1,5 @@
 .header {
+  animation: fade-up var(--dur) var(--ease) both;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--space-4);
@@ -25,6 +26,11 @@
   list-style: none;
 }
 
+.chips > li {
+  animation: fade-up var(--dur) var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 80ms);
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -45,4 +51,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

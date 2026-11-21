@@ -19,6 +19,14 @@
   font-weight: 600;
   cursor: pointer;
   line-height: 1.4;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.option:active {
+  transform: scale(0.94);
 }
 
 .option[aria-checked='true'] {

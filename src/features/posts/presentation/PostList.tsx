@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
 import { EmptyState } from '../../../shared/ui/EmptyState'
@@ -54,7 +55,11 @@ export function PostList({ user }: PostListProps) {
         {posts !== null && posts.length > 0 && (
           <ol className={styles.list}>
             {posts.map((post, index) => (
-              <li key={post.id} className={styles.post}>
+              <li
+                key={post.id}
+                className={post.id < 0 ? `${styles.post} ${styles.fresh}` : styles.post}
+                style={{ '--i': index } as CSSProperties}
+              >
                 <span className={styles.number} aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
                 </span>
