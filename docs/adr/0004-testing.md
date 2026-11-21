@@ -30,6 +30,13 @@ milliseconds without a DOM, which is where most of the suite lives.
   everybody wanted.
 - MSW for the API: would be the right tool at a larger size; a fake repository keeps each test readable.
 
+## End to end
+
+`e2e/` holds Playwright journeys over the production build, with the API mocked at the network layer from
+fixtures in `e2e/api.ts`. They cover what the component tests cannot: the real URL, a reload, the back
+button, the OS theme switch and the phone layout. They are their own CI job and their own command
+(`npm run test:e2e`), not part of `scripts/verify.sh`, because they need a browser download.
+
 ## Enforced by
 
 `npm run test:coverage` in `scripts/verify.sh` and CI: the suite plus V8 coverage with every threshold at
