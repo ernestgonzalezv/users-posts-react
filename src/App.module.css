@@ -12,6 +12,7 @@
 
 .side {
   background: var(--side);
+  transition: background-color var(--dur-slow) var(--ease);
   padding-top: var(--space-4);
   min-height: 0;
 }

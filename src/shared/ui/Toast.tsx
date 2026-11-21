@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { useEffect, useEffectEvent } from 'react'
 import { CheckIcon } from './icons'
 import styles from './Toast.module.css'
@@ -21,7 +22,7 @@ export function Toast({ message, onDone, durationMs = 4000 }: ToastProps) {
   }, [message, durationMs])
 
   return (
-    <div role="status" className={styles.toast}>
+    <div role="status" className={styles.toast} style={{ '--toast-ms': `${String(durationMs)}ms` } as CSSProperties}>
       <CheckIcon className={styles.icon} />
       <span>{message}</span>
     </div>

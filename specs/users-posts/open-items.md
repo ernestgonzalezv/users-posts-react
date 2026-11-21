@@ -120,3 +120,33 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **Written posts are lost when the user changes** because JSONPlaceholder does not persist them and
   the list is keyed by user; keeping them in memory per user is listed as a next step in the README.
 - **The container accepts `timeoutMs`** only so tests can shorten the watchdog; the app keeps 10 s.
+
+## Audit fixes (2026-11-20, PR 10)
+
+- **Counters measure what will be sent**: the title with inner spaces collapsed and ends trimmed, the
+  body trimmed, so a red counter always means the submit will be refused.
+- **Each publish is a new toast** (`key` on a counter), so the four seconds restart.
+- **Any unbroken string wraps** (`overflow-wrap: anywhere`) in titles, bodies and names.
+- **Clearing the search is immediate**; typing still waits 300 ms.
+
+## Motion (2026-11-20, PR 11)
+
+- **CSS only, no animation library**: durations and easings are tokens; `prefers-reduced-motion`
+  collapses every animation and transition through one global rule.
+- **Keyframes are declared in the module that uses them** because CSS Modules localises animation
+  names; a global `@keyframes` is unreachable from a module.
+- **Entrances are staggered with `--i`** set inline per row (28 ms for users, 35 ms for posts).
+
+## Coverage (2026-11-20, PR 12)
+
+- **Thresholds** 95 % lines, statements and functions, 90 % branches, enforced by `verify` and CI;
+  `main.tsx`, the test helpers and the tests themselves are excluded.
+- **The badge is self-hosted**: `scripts/coverage-badge.sh` writes the SVG, the workflow commits it to
+  the `badges` branch per source branch; the README reads `coverage-main.svg`.
+- **Codemagic runs the same `verify.sh`**; its build badge appears once the repository is connected there.
+
+## Badges branch (2026-11-20, PR 13)
+
+- **`badges` is a generated, single-commit branch**: each push run rebuilds it in an empty directory
+  from the badge files already there plus the new pair, and replaces it. It is never checked out and
+  never merged; replacing it is the one force-push the repository allows, because nothing is based on it.

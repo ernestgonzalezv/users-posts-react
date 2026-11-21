@@ -15,32 +15,43 @@ import { ThemeProvider } from './theme/ThemeProvider'
 
 const STACKED_LAYOUT = '(max-width: 720px)'
 
+const isStacked = (): boolean => typeof window.matchMedia === 'function' && window.matchMedia(STACKED_LAYOUT).matches
+
 interface AppProps {
   readonly container: Container
 }
 
 function Workspace() {
   const t = useT()
-  const [selected, setSelected] = useState<User | null>(null)
+  const [choice, setChoice] = useState<{
+    readonly user: User
+    readonly tap: number
+  } | null>(null)
+  const selected = choice?.user ?? null
   const main = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    if (selected !== null && window.matchMedia(STACKED_LAYOUT).matches) {
+    if (choice !== null && isStacked()) {
       main.current?.scrollIntoView({ block: 'start' })
     }
-  }, [selected])
+  }, [choice])
 
   return (
     <div className={styles.layout}>
       <aside className={styles.side}>
-        <UserList selectedId={selected?.id ?? null} onSelect={setSelected} />
+        <UserList
+          selectedId={selected?.id ?? null}
+          onSelect={(user) => {
+            setChoice((current) => ({ user, tap: (current?.tap ?? 0) + 1 }))
+          }}
+        />
       </aside>
       <main ref={main} className={styles.main}>
         {selected === null ? (
           <EmptyState icon={<InboxIcon />} title={t('posts.idle.title')} hint={t('posts.idle.hint')} />
         ) : (
           <>
-            <UserHeader user={selected} />
+            <UserHeader key={selected.id} user={selected} />
             <PostList key={selected.id} user={selected} />
           </>
         )}

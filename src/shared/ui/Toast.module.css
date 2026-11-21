@@ -13,13 +13,22 @@
   color: var(--bg);
   font-size: var(--text-sm);
   box-shadow: var(--shadow);
-  animation: rise 220ms ease-out;
+  animation:
+    rise var(--dur) var(--ease-pop) both,
+    sink var(--dur) var(--ease) calc(var(--toast-ms, 4000ms) - var(--dur)) forwards;
   z-index: 10;
 }
 
 .icon {
   color: var(--ok-soft);
   flex: none;
+}
+
+@keyframes sink {
+  to {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
 }
 
 @keyframes rise {

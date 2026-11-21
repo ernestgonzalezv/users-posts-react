@@ -23,6 +23,10 @@
   font: inherit;
   font-size: var(--text-sm);
   appearance: none;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    background-color var(--dur-slow) var(--ease);
 }
 
 .input::placeholder {
@@ -41,6 +45,7 @@
 }
 
 .clear {
+  animation: pop var(--dur) var(--ease-pop) both;
   position: absolute;
   right: var(--space-2);
   display: grid;
@@ -55,7 +60,25 @@
   font-size: 14px;
 }
 
+.clear {
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
 .clear:hover {
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }

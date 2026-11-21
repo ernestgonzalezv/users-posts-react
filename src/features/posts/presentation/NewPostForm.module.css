@@ -1,4 +1,5 @@
 .form {
+  animation: fade-up var(--dur) var(--ease) 30ms both;
   display: grid;
   gap: var(--space-3);
   max-width: 72ch;
@@ -37,6 +38,7 @@
 
 .counterOver {
   composes: counter;
+  animation: pop var(--dur) var(--ease-pop) both;
   color: var(--danger);
   font-weight: 600;
 }
@@ -51,6 +53,10 @@
   color: var(--fg);
   font-size: var(--text-md);
   line-height: 1.5;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
 }
 
 .textarea {
@@ -67,6 +73,7 @@
 .textarea[aria-invalid='true'] {
   border-color: var(--danger);
   background: var(--danger-soft);
+  animation: shake var(--dur-slow) var(--ease);
 }
 
 .input:disabled,
@@ -75,6 +82,7 @@
 }
 
 .fault {
+  animation: fade-up var(--dur) var(--ease) both;
   margin: 0;
   font-size: var(--text-xs);
   color: var(--danger);
@@ -98,6 +106,14 @@
   font-weight: 600;
   font-size: var(--text-sm);
   cursor: pointer;
+  transition:
+    filter var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.submit:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .submit:hover:not(:disabled) {
@@ -107,4 +123,46 @@
 .submit:disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  20% {
+    transform: translateX(-4px);
+  }
+
+  40% {
+    transform: translateX(4px);
+  }
+
+  60% {
+    transform: translateX(-2px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
 }

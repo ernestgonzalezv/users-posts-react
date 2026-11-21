@@ -9,7 +9,14 @@ import { fakeFetch, json, posts } from '../../../test/fake-fetch'
 import type { User } from '../../users/domain/model/user'
 import { PostList } from './PostList'
 
-const user = (id: number, name: string): User => ({ id, name, username: name, email: 'a@b.c', website: '', company: '' })
+const user = (id: number, name: string): User => ({
+  id,
+  name,
+  username: name,
+  email: 'a@b.c',
+  website: '',
+  company: '',
+})
 
 const renderPosts = (fetchFunction: FetchFunction, who = user(3, 'Clementine Bauch')) => {
   const container = createContainer({ fetchFunction })
@@ -66,7 +73,9 @@ describe('PostList', () => {
 
   it('inserts every written post at the top with its own key, shows the badge and the toast', async () => {
     const fetchFunction = fakeFetch((url, init) =>
-      init?.method === 'POST' ? json({ id: 101, userId: 3, title: 'Fresh', body: 'Ink' }, 201) : json(url.endsWith('userId=3') ? posts : []),
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'Fresh', body: 'Ink' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
     )
     renderPosts(fetchFunction)
     await screen.findByText('2 posts')
@@ -82,6 +91,27 @@ describe('PostList', () => {
     expect(headings[1]).toHaveTextContent('Fresh')
     expect(screen.getAllByText('New')).toHaveLength(2)
     expect(screen.getByRole('status')).toHaveTextContent('Published. Your post is at the top of the list.')
+  })
+
+  it('mounts a fresh toast on every publish so its timer restarts', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'Fresh', body: 'Ink' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    renderPosts(fetchFunction)
+    expect(await screen.findByText('2 posts')).toBeInTheDocument()
+    await userEvent.type(screen.getByLabelText('Title'), 'First')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    const first = await screen.findByRole('status')
+    await userEvent.type(screen.getByLabelText('Title'), 'Second')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    expect(await screen.findByText('4 posts')).toBeInTheDocument()
+    const second = screen.getByRole('status')
+    expect(second).toHaveTextContent('Published.')
+    expect(second).not.toBe(first)
   })
 
   it('turns the empty state into a list when the first post is written', async () => {

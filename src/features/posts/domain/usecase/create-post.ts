@@ -13,9 +13,11 @@ export type DraftFaults = Partial<Readonly<Record<FieldName, FieldFault>>>
 const faultOf = (value: string, max: number): FieldFault | null =>
   value === '' ? 'required' : value.length > max ? 'too-long' : null
 
+export const normalizeTitle = (title: string): string => title.trim().replace(/\s+/g, ' ')
+
 export const normalizeDraft = (draft: NewPost): NewPost => ({
   userId: draft.userId,
-  title: draft.title.trim().replace(/\s+/g, ' '),
+  title: normalizeTitle(draft.title),
   body: draft.body.trim(),
 })
 
