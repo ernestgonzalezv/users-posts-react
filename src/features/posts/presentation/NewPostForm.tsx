@@ -11,6 +11,8 @@ import type { DraftFaults, FieldFault, Publish } from '../domain/usecase/create-
 import { normalizeBody, normalizeTitle, validateDraft } from '../domain/usecase/create-post'
 import styles from './NewPostForm.module.css'
 
+const HARD_CAP = 20
+
 interface NewPostFormProps {
   readonly userId: number
   readonly onSubmit: Publish
@@ -90,7 +92,7 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
           id={`${id}-title`}
           className={styles.input}
           value={title}
-          maxLength={TITLE_MAX * 4}
+          maxLength={TITLE_MAX * HARD_CAP}
           placeholder={t('form.title.placeholder')}
           aria-invalid={titleFault !== null}
           aria-describedby={titleFault === null ? undefined : `${id}-title-fault`}
@@ -117,7 +119,7 @@ export function NewPostForm({ userId, onSubmit }: NewPostFormProps) {
           className={styles.textarea}
           value={body}
           rows={4}
-          maxLength={BODY_MAX * 4}
+          maxLength={BODY_MAX * HARD_CAP}
           placeholder={t('form.body.placeholder')}
           aria-invalid={bodyFault !== null}
           aria-describedby={bodyFault === null ? undefined : `${id}-body-fault`}
