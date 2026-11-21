@@ -132,3 +132,14 @@ The README summarises this file.
   used; in English, summarising this ledger.
 - **Accepted:** the README, the refreshed structure block in `CLAUDE.md`.
 - **Corrected:** nothing; the first draft listed the test counts from the suite as it is.
+
+## PR 10 — fixes from the edge-case audit
+
+- **Asked:** an honest audit of what the delivered app did not cover, then the fixes.
+- **Accepted:** three defects found by reading and one confirmed in the browser (a 300-character word
+  overflowed on a phone), plus three small improvements (instant clear, scroll on a second tap,
+  `matchMedia` guard).
+- **Corrected:** `npx prettier` had been run without a config in the repo and rewrote fifteen files
+  with double quotes and semicolons, three of them already merged; `.prettierrc` now carries the
+  repo style and those files are restored. A toast test on fake timers hung again; it asserts the
+  remount by node identity instead.

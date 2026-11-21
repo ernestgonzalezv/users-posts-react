@@ -120,3 +120,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **Written posts are lost when the user changes** because JSONPlaceholder does not persist them and
   the list is keyed by user; keeping them in memory per user is listed as a next step in the README.
 - **The container accepts `timeoutMs`** only so tests can shorten the watchdog; the app keeps 10 s.
+
+## Audit fixes (2026-11-20, PR 10)
+
+- **Counters measure what will be sent**: the title with inner spaces collapsed and ends trimmed, the
+  body trimmed, so a red counter always means the submit will be refused.
+- **Each publish is a new toast** (`key` on a counter), so the four seconds restart.
+- **Any unbroken string wraps** (`overflow-wrap: anywhere`) in titles, bodies and names.
+- **Clearing the search is immediate**; typing still waits 300 ms.
