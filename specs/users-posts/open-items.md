@@ -150,3 +150,11 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
 - **`badges` is a generated, single-commit branch**: each push run rebuilds it in an empty directory
   from the badge files already there plus the new pair, and replaces it. It is never checked out and
   never merged; replacing it is the one force-push the repository allows, because nothing is based on it.
+
+## Duplicate key (2026-11-21, PR 14)
+
+- **The header and the post list share one keyed fragment**: the motion PR had given both siblings
+  `key={selected.id}`, so React kept the old header on every change of user. One `Fragment` carries
+  the key now.
+- **A `console.error` during a test fails the test** (`src/test/setup.ts`), so a React warning can no
+  longer pass unnoticed through a green suite.

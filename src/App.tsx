@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import styles from './App.module.css'
 import type { Container } from './di/container'
 import { ContainerProvider } from './di/ContainerProvider'
@@ -50,10 +50,10 @@ function Workspace() {
         {selected === null ? (
           <EmptyState icon={<InboxIcon />} title={t('posts.idle.title')} hint={t('posts.idle.hint')} />
         ) : (
-          <>
-            <UserHeader key={selected.id} user={selected} />
-            <PostList key={selected.id} user={selected} />
-          </>
+          <Fragment key={selected.id}>
+            <UserHeader user={selected} />
+            <PostList user={selected} />
+          </Fragment>
         )}
       </main>
     </div>
