@@ -169,3 +169,13 @@ The README summarises this file.
   ten thousand objects and every fetch tried to download it. Found by tracing the fetch, not by guessing.
 - **Corrected:** the job now builds the branch in an empty directory with only the badge files and
   replaces it, so the branch stays one small commit.
+
+## PR 14 — duplicate key
+
+- **Asked:** why choosing several users stacked their headers one under the other.
+- **Found:** two siblings with the same `key`; React warned in the console on every selection and the
+  suite stayed green because nothing listened to `console.error`. Reproduced in the browser by counting
+  `header` elements inside `main` after three clicks.
+- **Corrected:** one keyed fragment for the pair, a test that asserts a single header after a second
+  choice, and the test setup now fails any test that triggers `console.error`; with that rule and
+  without the fix, five existing tests go red.

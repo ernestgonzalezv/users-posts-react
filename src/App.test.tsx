@@ -34,6 +34,18 @@ describe('App', () => {
     expect(within(main).getAllByRole('heading', { level: 4 })).toHaveLength(2)
   })
 
+  it('replaces the header and the posts when another user is chosen', async () => {
+    render(<App container={createContainer({ fetchFunction: fakeFetch(byRoute) })} />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Show posts by Leanne Graham' }))
+    const main = screen.getByRole('main')
+    expect(await within(main).findByText('2 posts')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Show posts by Ervin Howell' }))
+    expect(within(main).getAllByRole('heading', { level: 2 })).toHaveLength(1)
+    expect(within(main).queryByRole('heading', { level: 2, name: 'Leanne Graham' })).not.toBeInTheDocument()
+    expect(within(main).getByRole('heading', { level: 2, name: 'Ervin Howell' })).toBeInTheDocument()
+    expect(within(main).getAllByRole('form')).toHaveLength(1)
+  })
+
   it('scrolls the detail into view on a stacked layout', async () => {
     vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({ matches: query.includes('max-width') }) as MediaQueryList)
     const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView')
