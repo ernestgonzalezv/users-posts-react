@@ -166,3 +166,12 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   the badge script and `codemagic.yaml` are gone.
 - **`codecov.yml`**: project status at 95 % with 1 % tolerance, patch status informational at 90 %, a
   condensed comment only when coverage changes.
+
+## Router (2026-11-21, PR 16)
+
+- **The chosen user lives in the URL** (`/users/:id`) through the History API and `useSyncExternalStore`;
+  no routing library, since there is one route and the app must stay small.
+- **The address is parsed into a union** (`home`, `user`, `unknown`): a missing, non-numeric, zero or
+  oversized id and any other path land on a "not here" state with a way back that replaces the entry.
+- **The users resource moved up to the App**, which resolves the id against the directory; the list is
+  presentational now.

@@ -6,13 +6,19 @@ import { createContainer } from '../../../di/container'
 import { ContainerProvider } from '../../../di/ContainerProvider'
 import { LocaleProvider } from '../../../i18n/LocaleProvider'
 import { fakeFetch, json, users } from '../../../test/fake-fetch'
+import type { User } from '../domain/model/user'
+import { useUsers } from './use-users'
 import { UserList } from './UserList'
+
+function Harness({ selectedId, onSelect }: { readonly selectedId: number | null; readonly onSelect: (user: User) => void }) {
+  return <UserList users={useUsers()} selectedId={selectedId} onSelect={onSelect} />
+}
 
 const renderList = (fetchFunction: FetchFunction, onSelect = vi.fn(), selectedId: number | null = null) =>
   render(
     <ContainerProvider container={createContainer({ fetchFunction })}>
       <LocaleProvider initialLocale="en">
-        <UserList selectedId={selectedId} onSelect={onSelect} />
+        <Harness selectedId={selectedId} onSelect={onSelect} />
       </LocaleProvider>
     </ContainerProvider>,
   )
@@ -37,7 +43,11 @@ describe('UserList', () => {
 
   it('reports the chosen user and marks the selected row', async () => {
     const onSelect = vi.fn()
-    renderList(fakeFetch(() => json(users)), onSelect, 2)
+    renderList(
+      fakeFetch(() => json(users)),
+      onSelect,
+      2,
+    )
     const ervin = await screen.findByRole('button', { name: 'Show posts by Ervin Howell' })
     expect(ervin).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(screen.getByRole('button', { name: 'Show posts by Clementine Bauch' }))
@@ -76,7 +86,7 @@ describe('UserList', () => {
     render(
       <ContainerProvider container={createContainer({ fetchFunction: fakeFetch(() => json({}, 500)) })}>
         <LocaleProvider initialLocale="es">
-          <UserList selectedId={null} onSelect={vi.fn()} />
+          <Harness selectedId={null} onSelect={vi.fn()} />
         </LocaleProvider>
       </ContainerProvider>,
     )
