@@ -8,20 +8,23 @@ describe('parseRoute', () => {
     expect(parseRoute('/users/3')).toEqual({ kind: 'user', id: 3 })
     expect(parseRoute('/users/3/')).toEqual({ kind: 'user', id: 3 })
     expect(parseRoute('/users/000123456')).toEqual({ kind: 'user', id: 123456 })
+    expect(parseRoute('/users/0')).toEqual({ kind: 'user', id: 0 })
+    expect(parseRoute('/users/-1')).toEqual({ kind: 'user', id: -1 })
+    expect(parseRoute('/users/1234567890')).toEqual({ kind: 'user', id: 1234567890 })
   })
 
   it.each([
     '/users',
     '/users/',
     '/users/abc',
-    '/users/-1',
     '/users/1.5',
-    '/users/0',
+    '/users/--1',
     '/users/1e3',
+    '/users/9007199254740993',
+    '/users/1234567890123456',
     '/USERS/1',
     '/users/1/posts',
     '/posts/1',
-    '/users/1234567890',
     '/users/%31',
     '/users/1?x=1',
   ])('treats %s as unknown', (path) => {

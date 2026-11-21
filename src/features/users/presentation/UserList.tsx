@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { useT } from '../../../i18n/locale-context'
+import { counted } from '../../../i18n/translate'
 import { DEBOUNCE_MS, useDebouncedValue } from '../../../shared/presentation/use-debounced-value'
 import type { Resource } from '../../../shared/presentation/use-resource'
 import { Avatar } from '../../../shared/ui/Avatar'
@@ -42,7 +43,7 @@ export function UserList({ users, selectedId, onSelect }: UserListProps) {
         {loaded !== null && matches !== null && (
           <span className={styles.count} aria-live="polite">
             {settledQuery.trim() === ''
-              ? t('users.count', { count: loaded.length })
+              ? counted(t, 'users.count', loaded.length)
               : t('users.count.filtered', {
                   count: matches.length,
                   total: loaded.length,

@@ -9,6 +9,8 @@ describe('isPostDto', () => {
   it('rejects a missing or mistyped field', () => {
     expect(isPostDto({ id: 1, userId: '1', title: 'a', body: 'b' })).toBe(false)
     expect(isPostDto({ id: 1, userId: 1, title: 'a' })).toBe(false)
+    expect(isPostDto({ id: 1.5, userId: 1, title: 'a', body: 'b' })).toBe(false)
+    expect(isPostDto({ id: 1, userId: Number.POSITIVE_INFINITY, title: 'a', body: 'b' })).toBe(false)
     expect(isPostDto(null)).toBe(false)
   })
 

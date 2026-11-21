@@ -12,6 +12,13 @@ describe('initialsOf', () => {
     expect(initialsOf('123 Ervin')).toBe('E')
   })
 
+  it('falls back to the first character when no word starts with a letter', () => {
+    expect(initialsOf('123 456')).toBe('1')
+    expect(initialsOf('🙂 face')).toBe('F')
+    expect(initialsOf('🙂')).toBe('🙂')
+    expect(initialsOf('e\u0301lodie')).toBe('E\u0301')
+  })
+
   it('returns an empty string for an empty name', () => {
     expect(initialsOf('   ')).toBe('')
   })

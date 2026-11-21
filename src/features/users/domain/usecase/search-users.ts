@@ -1,12 +1,7 @@
 import type { User } from '../model/user'
 
 export const normalizeText = (text: string): string =>
-  text
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, ' ')
+  text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ')
 
 const matches = (user: User, query: string): boolean =>
   normalizeText(user.name).includes(query) || normalizeText(user.username).includes(query)

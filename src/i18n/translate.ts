@@ -26,3 +26,8 @@ export const createTranslate =
   (dictionaries: Readonly<Record<Locale, Dictionary>>, locale: Locale): Translate =>
   (key, ...args) =>
     format(dictionaries[locale][key], args[0])
+
+export type CountKey = 'users.count' | 'posts.count'
+
+export const counted = (t: Translate, key: CountKey, count: number): string =>
+  count === 1 ? t(`${key}.one`, { count }) : t(key, { count })

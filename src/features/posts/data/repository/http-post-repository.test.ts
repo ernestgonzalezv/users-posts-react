@@ -71,6 +71,23 @@ describe('HttpPostRepository', () => {
     expect(result.ok && result.value.map((post) => post.source)).toEqual(['written', 'written', 'remote', 'remote'])
   })
 
+  it('drops a repeated id and strips control characters from the server text', async () => {
+    const fetchFunction = vi
+      .fn<FetchFunction>()
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            ...posts,
+            { id: 2, userId: 3, title: 'dup', body: 'x' },
+            { id: 3, userId: 3, title: 'a\u0000b', body: 'c\r\nd' },
+          ]),
+        ),
+      )
+    const result = await repositoryWith(fetchFunction).getByUser(3)
+    expect(result.ok && result.value.map((post) => post.title)).toEqual(['sunt aut facere', 'qui est esse', 'ab'])
+    expect(result.ok && result.value[2]?.body).toBe('c\nd')
+  })
+
   it('keeps nothing when the server refuses the post', async () => {
     const written = memoryStore()
     const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(new Response('{}', { status: 500 }))

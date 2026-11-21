@@ -1,6 +1,7 @@
 import type { HttpClient } from '../../../../core/http-client'
 import type { Result } from '../../../../core/result'
 import { mapResult } from '../../../../core/result'
+import { uniqueById } from '../../../../core/unique'
 import type { NewPost } from '../../domain/model/new-post'
 import type { Post } from '../../domain/model/post'
 import type { PostRepository } from '../../domain/repository/post-repository'
@@ -19,7 +20,7 @@ export class HttpPostRepository implements PostRepository {
 
   async getByUser(userId: number, signal?: AbortSignal): Promise<Result<readonly Post[]>> {
     const result = await this.http.get(`/posts?userId=${String(userId)}`, isPostDtoList, { signal })
-    return mapResult(result, (dtos) => [...this.written.list(userId), ...dtos.map((dto) => toPost(dto))])
+    return mapResult(result, (dtos) => uniqueById([...this.written.list(userId), ...dtos.map((dto) => toPost(dto))]))
   }
 
   async create(post: NewPost, signal?: AbortSignal): Promise<Result<Post>> {

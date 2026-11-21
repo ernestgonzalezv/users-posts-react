@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import type { Result } from '../../../core/result'
 import { useContainer } from '../../../di/container-context'
 import { useT } from '../../../i18n/locale-context'
+import { counted } from '../../../i18n/translate'
 import { EmptyState } from '../../../shared/ui/EmptyState'
 import { ErrorBox } from '../../../shared/ui/ErrorBox'
 import { FileTextIcon } from '../../../shared/ui/icons'
@@ -69,9 +70,7 @@ export function PostList({ user }: PostListProps) {
           <h3 id="posts-title" className={styles.title}>
             {t('posts.title')}
           </h3>
-          {posts !== null && posts.length > 0 && (
-            <span className={styles.count}>{t('posts.count', { count: posts.length })}</span>
-          )}
+          {posts !== null && posts.length > 0 && <span className={styles.count}>{counted(t, 'posts.count', posts.length)}</span>}
         </div>
         {state.status === 'loading' && <Spinner label={t('posts.loading')} />}
         {state.status === 'error' && <ErrorBox error={state.error} onRetry={reload} />}

@@ -1,3 +1,5 @@
+import { firstGrapheme } from '../../../../core/text'
+
 export interface User {
   readonly id: number
   readonly name: string
@@ -7,11 +9,13 @@ export interface User {
   readonly company: string
 }
 
-export const initialsOf = (name: string): string =>
-  name
-    .trim()
+export const initialsOf = (name: string): string => {
+  const trimmed = name.trim()
+  const letters = trimmed
     .split(/\s+/)
-    .filter((part) => /^[\p{L}]/u.test(part))
+    .filter((part) => /^\p{L}/u.test(part))
     .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
+    .map((part) => firstGrapheme(part).toUpperCase())
     .join('')
+  return letters === '' ? firstGrapheme(trimmed).toUpperCase() : letters
+}
