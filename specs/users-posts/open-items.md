@@ -236,3 +236,17 @@ Decided by Ernesto on 2026-11-20 ("añádeles el dark/light theme a todos").
   and across a reload; rollback and retry; validation; posts failure, retry and paging.
 - **Not part of `verify.sh`**: the e2e run needs a browser download, so it is its own CI job and
   `npm run test:e2e` locally.
+
+## Full coverage (2026-11-21, PR 24)
+
+- **Thresholds at 100 %** for lines, statements, functions and branches: every remaining gap was either a
+  defensive branch worth a test (storage that throws, no `Intl.Segmenter`, hooks outside their provider,
+  the server snapshots, the busy guard of the form, every arrow of the segmented control) or dead code.
+- **Dead code removed instead of covered**: the `?? hue` fallback of the avatar (an index modulo the
+  length is always inside the array) and the `undefined` check after the segmented-control arithmetic.
+- **The user route accepts up to seventeen digits**, so a number past `Number.MAX_SAFE_INTEGER`
+  reaches the safe-integer check instead of being rejected by the regex alone.
+- **`PostList` takes an optional `toastMs`** so a test can watch the toast leave without waiting the
+  real four seconds; the app never passes it.
+- **The phone journey asks Playwright for reduced motion**, since smooth scrolling was still running
+  between two measurements in CI.

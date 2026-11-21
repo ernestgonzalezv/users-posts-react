@@ -103,6 +103,15 @@ describe('HttpClient', () => {
     expect(fetchFunction).not.toHaveBeenCalled()
   })
 
+  it('uses the global fetch when none is given', async () => {
+    const globalFetch = vi.fn<FetchFunction>().mockResolvedValue(new Response('[]'))
+    vi.stubGlobal('fetch', globalFetch)
+    const result = await new HttpClient({ baseUrl: 'https://api.test' }).get('/users', Array.isArray)
+    expect(result).toEqual({ ok: true, value: [] })
+    expect(globalFetch.mock.calls[0]![0]).toBe('https://api.test/users')
+    vi.unstubAllGlobals()
+  })
+
   it('strips a trailing slash from the base url', async () => {
     const fetchFunction = vi.fn<FetchFunction>().mockResolvedValue(jsonResponse('{"id":1}'))
     await new HttpClient({ baseUrl: 'https://api.test///', fetchFunction }).get('/a', isThing)

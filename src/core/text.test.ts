@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { firstGrapheme, graphemes, stripControls, textLength } from './text'
 
 describe('graphemes and textLength', () => {
@@ -27,5 +27,17 @@ describe('stripControls', () => {
 
   it('keeps letters of every script, emoji and joiners', () => {
     expect(stripControls('日本語 العربية 👩‍👩‍👧‍👦 ‌فارسی', false)).toBe('日本語 العربية 👩‍👩‍👧‍👦 ‌فارسی')
+  })
+})
+
+describe('without Intl.Segmenter', () => {
+  it('falls back to code points', async () => {
+    vi.resetModules()
+    vi.stubGlobal('Intl', { ...Intl, Segmenter: undefined })
+    const fallback = await import('./text')
+    vi.unstubAllGlobals()
+    expect(fallback.textLength('🇪🇸')).toBe(2)
+    expect(fallback.textLength('abc')).toBe(3)
+    expect(fallback.firstGrapheme('é')).toBe('é')
   })
 })

@@ -35,7 +35,7 @@ npm run dev        # http://localhost:5173
 | Command | What it does |
 |---|---|
 | `npm run test` | the whole suite with Vitest (140 tests in 33 files) |
-| `npm run test:coverage` | the suite with V8 coverage; fails under 95 % lines/statements/functions or 90 % branches; HTML report in `coverage/` |
+| `npm run test:coverage` | the suite with V8 coverage; fails under 100 % on lines, statements, functions and branches; HTML report in `coverage/` |
 | `npm run typecheck` | `tsc -b --noEmit`, strict with `exactOptionalPropertyTypes` |
 | `npm run lint` | ESLint with the type-aware rules |
 | `npm run build` | production build into `dist/` |
@@ -113,9 +113,9 @@ retry after a network failure; timeout; the chosen user hidden by the search).
 
 No network in tests: `src/test/fake-fetch.ts` routes a fake `fetch` by URL and method.
 
-**Coverage** (V8 through `@vitest/coverage-v8`): about 97 % lines, 95 % branches and 99 % functions over
-`src/` minus tests and the entry point. `scripts/verify.sh` runs the suite with coverage, so a drop under
-the thresholds fails locally and in CI. Every CI run uploads `coverage/lcov.info` to
+**Coverage** (V8 through `@vitest/coverage-v8`): 100 % lines, branches and functions over `src/` minus
+tests and the entry point, and the thresholds sit at 100 %, so `scripts/verify.sh` and CI fail on the first
+line or branch nobody exercises. Every CI run uploads `coverage/lcov.info` to
 [Codecov](https://codecov.io/gh/ernestgonzalezv/users-posts-react) through the GitHub App (OIDC, no token
 in the repository); Codecov draws the badge above and comments the delta on each pull request, with the
 project target set in `codecov.yml`. The HTML report is also uploaded as the `coverage-report` artifact

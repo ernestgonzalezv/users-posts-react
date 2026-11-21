@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitForElementToBeRemoved, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import type { FetchFunction } from '../../../core/http-client'
@@ -112,6 +112,29 @@ describe('PostList', () => {
     const second = screen.getByRole('status')
     expect(second).toHaveTextContent('Published.')
     expect(second).not.toBe(first)
+  })
+
+  it('lets the toast go away after its time', async () => {
+    const fetchFunction = fakeFetch((url, init) =>
+      init?.method === 'POST'
+        ? json({ id: 101, userId: 3, title: 'x', body: 'y' }, 201)
+        : json(url.endsWith('userId=3') ? posts : []),
+    )
+    const container = createContainer({ fetchFunction })
+    render(
+      <ContainerProvider container={container}>
+        <LocaleProvider initialLocale="en">
+          <PostList user={user(3, 'Clementine Bauch')} toastMs={30} />
+        </LocaleProvider>
+      </ContainerProvider>,
+    )
+    await screen.findByText('2 posts')
+    await userEvent.type(screen.getByLabelText('Title'), 'Brief')
+    await userEvent.type(screen.getByLabelText('Body'), 'Ink')
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    const toast = await screen.findByRole('status')
+    await waitForElementToBeRemoved(toast)
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
 
   it('turns the empty state into a list when the first post is written', async () => {

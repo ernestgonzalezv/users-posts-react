@@ -21,7 +21,7 @@ describe('parseRoute', () => {
     '/users/--1',
     '/users/1e3',
     '/users/9007199254740993',
-    '/users/1234567890123456',
+    '/users/123456789012345678',
     '/USERS/1',
     '/users/1/posts',
     '/posts/1',
